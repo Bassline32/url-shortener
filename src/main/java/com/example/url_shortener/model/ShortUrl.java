@@ -1,4 +1,4 @@
-package model;
+package com.example.url_shortener.model;
 
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;

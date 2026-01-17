@@ -1,4 +1,4 @@
-package model;
+package com.example.url_shortener.model;
 
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 public class Click {
 
-
+    @NotNull
     private Long id;
 
     @NotNull
