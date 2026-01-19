@@ -26,4 +26,8 @@ public class ShortUrl {
 
     //счётчик переходов по ссылке
     private int clickCount;
+
+
+    public ShortUrl() {
+    }
 }
