@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -34,14 +35,16 @@ public class RedirectController {
         ShortUrl shortUrl = null;
 
         if (optionalUrl.isPresent()) {
-           shortUrl = optionalUrl.get();
+            shortUrl = optionalUrl.get();
             if (shortUrl.getExpiresAt() != null && shortUrl.getExpiresAt().isBefore(LocalDateTime.now())) {
                 return ResponseEntity.status(HttpStatus.GONE).body(null);
             }
+            urlService.trackClick(shortCode, request);
+            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(shortUrl.getOriginalUrl())).build();
 
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-
     }
-
 
 }

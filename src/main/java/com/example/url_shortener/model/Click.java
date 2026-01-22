@@ -28,4 +28,9 @@ public class Click {
     @NotNull
     // откуда пришёл пользователь
     private String referer;
+
+    public Click() {
+    }
+
+
 }
