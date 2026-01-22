@@ -1,6 +1,7 @@
 package com.example.url_shortener.controller;
 
 
+import com.example.url_shortener.Service.ClickService;
 import com.example.url_shortener.Service.UrlService;
 import com.example.url_shortener.model.ShortUrl;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,10 +23,12 @@ import java.util.Optional;
 public class RedirectController {
 
     private final UrlService urlService;
+    private final ClickService clickService;
 
     @Autowired
-    public RedirectController(UrlService urlService) {
+    public RedirectController(UrlService urlService, ClickService clickService) {
         this.urlService = urlService;
+        this.clickService = clickService;
     }
 
     @GetMapping("/{shortCode}")
@@ -39,7 +42,7 @@ public class RedirectController {
             if (shortUrl.getExpiresAt() != null && shortUrl.getExpiresAt().isBefore(LocalDateTime.now())) {
                 return ResponseEntity.status(HttpStatus.GONE).body(null);
             }
-            urlService.trackClick(shortCode, request);
+            clickService.trackClick(shortCode, request);
             return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(shortUrl.getOriginalUrl())).build();
 
         } else {
