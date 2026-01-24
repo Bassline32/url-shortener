@@ -10,7 +10,7 @@ import java.util.Map;
 public class AnalyticsResponse {
 
     @Data
-    public class ShortUrlStatus {
+    public static class ShortUrlStatus {
         private String shortCode;
         private String originalUrl;
         private int totalClicks;
@@ -20,19 +20,19 @@ public class AnalyticsResponse {
     }
 
     @Data
-    public class RefererStatus {
+    public static class RefererStatus {
         private String referer;
         private long count;
     }
 
     @Data
-    public class BrowserStatus {
+    public static class BrowserStatus {
         private String browser;
         private long count;
     }
 
     @Data
-    public class DetailedAnalitics {
+    public static class DetailedAnalitics {
         private int totalClicks;
         private int uniqueIps;
         private Map<LocalDate, Long> clicksByDate;
@@ -42,7 +42,7 @@ public class AnalyticsResponse {
     }
 
     @Data
-    public class SummaryAnalitics {
+    public static class SummaryAnalitics {
         private int totalUrls;
         private int activeUrls;
         private int expiredUrls;

@@ -34,9 +34,9 @@ public class ClickService {
 
     //Возвращаем количество кликов по указанному короткому коду
     // Stream API
-    public Optional<Click> getClickCountByShortCode (String shortCode) {
+    public Long getClickCountByShortCode (String shortCode) {
         List<Click> clicks = clickRepository.findByAllShortCode(shortCode);
-        return clicks.stream().max(Comparator.comparing(Click :: getTimestamp));
+        return (long) clicks.size();
     }
     //метод для отслеживания кликов и информации по ним
     public void trackClick(String shortCode, HttpServletRequest request) {
