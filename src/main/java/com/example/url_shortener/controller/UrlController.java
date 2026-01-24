@@ -2,7 +2,7 @@
 
 package com.example.url_shortener.controller;
 
-import com.example.url_shortener.Service.UrlService;
+import com.example.url_shortener.service.UrlService;
 import com.example.url_shortener.model.ShortUrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +53,5 @@ public class UrlController {
         URI location = URI.create("/api/vi/urls" + shortUrl.getShortCode());
         return ResponseEntity.created(location).body(shortUrl);
     }
-
 
 }

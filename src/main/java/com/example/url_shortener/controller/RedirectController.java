@@ -1,8 +1,8 @@
 package com.example.url_shortener.controller;
 
 
-import com.example.url_shortener.Service.ClickService;
-import com.example.url_shortener.Service.UrlService;
+import com.example.url_shortener.service.ClickService;
+import com.example.url_shortener.service.UrlService;
 import com.example.url_shortener.model.ShortUrl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;

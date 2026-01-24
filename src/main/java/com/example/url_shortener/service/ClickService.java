@@ -1,4 +1,4 @@
-package com.example.url_shortener.Service;
+package com.example.url_shortener.service;
 
 
 import com.example.url_shortener.model.Click;
