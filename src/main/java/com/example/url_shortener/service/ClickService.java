@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ClickService {
@@ -34,10 +32,10 @@ public class ClickService {
 
     //Возвращаем количество кликов по указанному короткому коду
     // Stream API
-    public Long getClickCountByShortCode (String shortCode) {
-        List<Click> clicks = clickRepository.findByAllShortCode(shortCode);
-        return (long) clicks.size();
+    public List<Click> getClickCountByShortCode(String shortCode) {
+        return clickRepository.findByAllShortCode(shortCode);
     }
+
     //метод для отслеживания кликов и информации по ним
     public void trackClick(String shortCode, HttpServletRequest request) {
         Click click = new Click();

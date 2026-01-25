@@ -1,6 +1,7 @@
 package dto;
 
 import lombok.Data;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,6 +18,9 @@ public class AnalyticsResponse {
         private int uniqueVisitors;
         private LocalDateTime createdAt;
         private LocalDateTime lastClickAt;
+
+        public ShortUrlStatus(String shortCode, @NotNull String originalUrl, long totalClicks, long uniqueIp, @NotNull LocalDateTime createdAt, LocalDateTime lastClickAt) {
+        }
     }
 
     @Data
