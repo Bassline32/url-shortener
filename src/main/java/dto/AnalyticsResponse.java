@@ -27,12 +27,18 @@ public class AnalyticsResponse {
     public static class RefererStatus {
         private String referer;
         private long count;
+
+        public RefererStatus(@NotNull String key, Long value) {
+        }
     }
 
     @Data
     public static class BrowserStatus {
         private String browser;
         private long count;
+
+        public BrowserStatus(@NotNull String key, Long value) {
+        }
     }
 
     @Data
@@ -43,6 +49,9 @@ public class AnalyticsResponse {
         private Map<Integer, Long> clicksByHour;
         private List<RefererStatus> topReferers;
         private List<BrowserStatus> topBrowsers;
+
+        public DetailedAnalitics(long totalClicks, long uniqueIps, Map<LocalDate, Long> clicksByDate, Map<Integer, Long> clicksByHour, List<RefererStatus> topReferers, List<BrowserStatus> topBrowsers) {
+        }
     }
 
     @Data

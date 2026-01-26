@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -75,7 +76,7 @@ public class AnalyticsService {
         List<Click> clicks = clickService.getClickCountByShortCode(shortcode);
 
         //получаем общее количество кликов (считаем элементы в списке)
-        long totalclicks = clicks.size();
+        long totalClicks = clicks.size();
 
         //получаем уникальных посетителей
         long uniqueIps = clicks.stream().
@@ -94,7 +95,48 @@ public class AnalyticsService {
                 .collect(Collectors.groupingBy(d -> d.getTimestamp().getHour(),
                         Collectors.counting()));
 
+        //получаем рефереры
+        List<AnalyticsResponse.RefererStatus> topReferers = clicks.stream()
+                //получаем реферер из каждого клика
+                .map(Click::getReferer)
+                //отфильтровываем клики без рефереров(лямбда выражение)
+                .filter(referer -> referer != null && referer.isEmpty())
+                //раскладвываю клики по реферерам и считаю их значение
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                //беру все пары ключ значение из мапы и преобразую их в поток
+                .entrySet().stream()
+                //сортируем пары ключ значения начиная с самых популярных
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                //оставляем первые пять элементов в потоке
+                .limit(5)
+                //преобразуем каждый элемент потока в новый объект.
+                // Это полезно, когда нужно создать новую структуру данных на основе существующих данных
+                .map(entry -> new AnalyticsResponse.RefererStatus(entry.getKey(), entry.getValue()))
+                //преобразую поток в список
+                .toList();
 
+
+        //получаем браузеры
+        List<AnalyticsResponse.BrowserStatus> topBrowsers = clicks.stream()
+                //получаем браузер из каждого клика
+                .map(Click::getUserAgent)
+                .filter(browser -> browser != null && browser.isEmpty())
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(5)
+                .map(entry -> new AnalyticsResponse.BrowserStatus(entry.getKey(), entry.getValue()))
+                .toList();
+
+
+        return new AnalyticsResponse.DetailedAnalitics(
+                totalClicks,
+                uniqueIps,
+                clicksByDate,
+                clicksByHour,
+                topReferers,
+                topBrowsers
+        );
     }
 }
 
