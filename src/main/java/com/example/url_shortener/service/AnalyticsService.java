@@ -18,17 +18,12 @@ import java.util.stream.Collectors;
 public class AnalyticsService {
 
     private final UrlService urlService;
-    private final ShortUrl shortUrl;
     private final ClickRepository clickRepository;
-    private final AnalyticsResponse analyticsResponse;
     public final ClickService clickService;
 
     public AnalyticsService(UrlService urlService, ShortUrl shortUrl, ClickRepository clickRepository, AnalyticsResponse analyticsResponse, ClickService clickService) {
         this.urlService = urlService;
-        this.shortUrl = shortUrl;
-
         this.clickRepository = clickRepository;
-        this.analyticsResponse = analyticsResponse;
         this.clickService = clickService;
     }
 
