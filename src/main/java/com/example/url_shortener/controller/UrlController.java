@@ -54,4 +54,23 @@ public class UrlController {
         return ResponseEntity.created(location).body(shortUrl);
     }
 
+    //пагинация и сортировка
+    @GetMapping
+    public ResponseEntity<List<ShortUrl>> getUrls (
+            //праметр метода номер страницы
+            @RequestParam(defaultValue = "0") int page,
+            //количество элементов, которые нужно вернуть на странице
+            @RequestParam(defaultValue = "10") int size,
+            //поле, по которому будет производиться сортировка
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            // параметр указывает порядок сортировки (asc — по возрастанию, desc — по убыванию).
+            // По умолчанию, если параметр не указан в запросе, будет использоваться desc.
+            @RequestParam(defaultValue = "desk") String order
+    ) {
+       List<ShortUrl> urls = urlService.getUrls(page, size, sortBy, order);
+        return ResponseEntity.ok(urls);
+    }
+
+
+
 }

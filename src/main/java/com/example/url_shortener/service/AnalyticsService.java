@@ -19,7 +19,7 @@ public class AnalyticsService {
 
     private final UrlService urlService;
     private final ClickRepository clickRepository;
-    public final ClickService clickService;
+    private final ClickService clickService;
 
     public AnalyticsService(UrlService urlService, ShortUrl shortUrl, ClickRepository clickRepository, AnalyticsResponse analyticsResponse, ClickService clickService) {
         this.urlService = urlService;
@@ -30,7 +30,7 @@ public class AnalyticsService {
     // Возвращаю общую статистику по одной ссылке
 
     public AnalyticsResponse.ShortUrlStatus getShortUrlStatus(String shortCode) {
-// получаем ссылку по короткому коду и проверяем есть ли она
+        // получаем ссылку по короткому коду и проверяем есть ли она
         ShortUrl url = urlService.getUrlByShortCode(shortCode);
         if (url == null) {
             throw new RuntimeException("Link not Found");

@@ -3,6 +3,10 @@ package com.example.url_shortener.service;
 import com.example.url_shortener.model.ShortUrl;
 import com.example.url_shortener.repository.UrlRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -61,5 +65,19 @@ public class UrlService {
         }
         return shortCode.toString();
     }
+
+    //пагинация и сортировка
+    public List<ShortUrl> getUrls(int page, int size, String sortBy, String order) {
+        Sort sort = Sort.by(order.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+        //Инструкция по пагиации данных
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        //получаю данные из репозитория
+        Page<ShortUrl> urlPage = urlRepository.findAll(pageable);
+
+        //возвращаем отсортированную страницу
+        return urlPage.getContent();
+    }
+
 
 }
