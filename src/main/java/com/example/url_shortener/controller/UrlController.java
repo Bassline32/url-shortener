@@ -2,8 +2,8 @@
 
 package com.example.url_shortener.controller;
 
-import com.example.url_shortener.service.UrlService;
 import com.example.url_shortener.model.ShortUrl;
+import com.example.url_shortener.service.UrlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -56,7 +56,7 @@ public class UrlController {
 
     //пагинация и сортировка
     @GetMapping
-    public ResponseEntity<List<ShortUrl>> getUrls (
+    public ResponseEntity<List<ShortUrl>> getUrls(
             //праметр метода номер страницы
             @RequestParam(defaultValue = "0") int page,
             //количество элементов, которые нужно вернуть на странице
@@ -67,10 +67,35 @@ public class UrlController {
             // По умолчанию, если параметр не указан в запросе, будет использоваться desc.
             @RequestParam(defaultValue = "desk") String order
     ) {
-       List<ShortUrl> urls = urlService.getUrls(page, size, sortBy, order);
+        List<ShortUrl> urls = urlService.getUrls(page, size, sortBy, order);
         return ResponseEntity.ok(urls);
     }
 
+    //ищем ссылки по ключевому слову
+    @GetMapping("/search")
+    public ResponseEntity<List<ShortUrl>> searchUrlsByKeyword(@RequestParam String keyword) {
+        List<ShortUrl> urls = urlService.searchUrlByKeyWord(keyword);
+        return ResponseEntity.ok(urls);
+    }
 
+    //ищем ссылки по домену
+    @GetMapping("/search")
+    public ResponseEntity<List<ShortUrl>> searchUrlsByDomain(@RequestParam String domain) {
+        List<ShortUrl> urls = urlService.searchUrlsByDomain(domain);
+        return ResponseEntity.ok(urls);
+    }
 
+    //ищем просроченные ссылки
+    @GetMapping("/expired")
+    public ResponseEntity<List<ShortUrl>> searchExpireUrls() {
+        List<ShortUrl> urls = urlService.getExpiredUrls();
+        return ResponseEntity.ok(urls);
+    }
+
+    //ищем актуальные ссылки
+    @GetMapping("/actual")
+    public ResponseEntity<List<ShortUrl>> searchActualUrls() {
+        List<ShortUrl> urls = urlService.getActualUrls();
+        return ResponseEntity.ok(urls);
+    }
 }

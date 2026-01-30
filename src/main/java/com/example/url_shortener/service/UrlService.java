@@ -79,5 +79,25 @@ public class UrlService {
         return urlPage.getContent();
     }
 
+    //получение просроченных ссылок
+    public List<ShortUrl> getExpiredUrls () {
+        LocalDateTime now = LocalDateTime.now();
+        return urlRepository.findByExpiresAtBefore(now);
+    }
 
+    //получение активных ссылок
+    public List<ShortUrl> getActualUrls () {
+        LocalDateTime now = LocalDateTime.now();
+        return urlRepository.findByExpiresAtAfter(now);
+    }
+
+    //получение результатов поиска по домену
+    public List<ShortUrl> searchUrlsByDomain (String domain) {
+        return urlRepository.findByOriginalUrlContainingDomain(domain);
+    }
+
+    //поиск по ключевому слову
+    public List<ShortUrl> searchUrlByKeyWord (String keyword) {
+        return urlRepository.findByOriginalUrlContainingKeyword(keyword);
+    }
 }

@@ -19,7 +19,7 @@ public interface UrlRepository extends JpaRepository<ShortUrl, String> {
     List<ShortUrl> findByOriginalUrlContainingDomain(String domain);
 
     //поиск по ключевому слову
-    List<ShortUrl> findByOriginalUrlContainingKeyWord(String keyWord);
+    List<ShortUrl> findByOriginalUrlContainingKeyword(String keyword);
 
     //получаем просроченные ссылки
     List<ShortUrl> findByExpiresAtBefore(LocalDateTime now);
