@@ -1,5 +1,7 @@
 package com.example.url_shortener.service;
 
+import com.example.url_shortener.dto.CreateUrlRequest;
+import com.example.url_shortener.exception.ShortCodeAlreadyExistsException;
 import com.example.url_shortener.model.ShortUrl;
 import com.example.url_shortener.repository.UrlRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -28,7 +31,7 @@ public class UrlService {
 
     }
 
-
+    //генерация короткого URL
     public ShortUrl createShortUrl(String originalUrl) {
         String shortCode = shortCode();
         ShortUrl shortUrl = new ShortUrl();
@@ -80,24 +83,60 @@ public class UrlService {
     }
 
     //получение просроченных ссылок
-    public List<ShortUrl> getExpiredUrls () {
+    public List<ShortUrl> getExpiredUrls() {
         LocalDateTime now = LocalDateTime.now();
         return urlRepository.findByExpiresAtBefore(now);
     }
 
     //получение активных ссылок
-    public List<ShortUrl> getActualUrls () {
+    public List<ShortUrl> getActualUrls() {
         LocalDateTime now = LocalDateTime.now();
         return urlRepository.findByExpiresAtAfter(now);
     }
 
     //получение результатов поиска по домену
-    public List<ShortUrl> searchUrlsByDomain (String domain) {
+    public List<ShortUrl> searchUrlsByDomain(String domain) {
         return urlRepository.findByOriginalUrlContainingDomain(domain);
     }
 
     //поиск по ключевому слову
-    public List<ShortUrl> searchUrlByKeyWord (String keyword) {
+    public List<ShortUrl> searchUrlByKeyWord(String keyword) {
         return urlRepository.findByOriginalUrlContainingKeyword(keyword);
+    }
+
+    //обработка ошибок, если кастомный код уже занят
+    public ShortUrl createShortUrl(String originalUrl, String customCode, LocalDateTime expiresAt) {
+        if (customCode != null && urlRepository.existByShortCode(customCode)) {
+            throw new ShortCodeAlreadyExistsException("Такой кастомный код уже существует " + customCode);
+        }
+
+        ShortUrl shortUrl = new ShortUrl();
+        //shortCode == generateShortcode
+        shortUrl.setShortCode(customCode != null ? customCode : shortCode());
+        shortUrl.setOriginalUrl(originalUrl);
+        shortUrl.setCreatedAt(LocalDateTime.now());
+        shortUrl.setExpiresAt(expiresAt);
+        return urlRepository.save(shortUrl);
+    }
+
+    //массовое создание ссылкок
+    public List<ShortUrl> createurls(List<CreateUrlRequest> requests) {
+        List<ShortUrl> urls = new ArrayList<>();
+        //для каждого элемента request в коллекции requests
+        for (CreateUrlRequest request : requests) {
+            ShortUrl url = createShortUrl(request.getOriginalUrl(),
+                    request.getCustomCode(), request.getExpiresAt());
+            urls.add(url);
+        }
+        return urls;
+    }
+
+    public String exportToCsv(List<ShortUrl> urls) {
+        StringBuilder csv = new StringBuilder();
+        //добавим заголовок csv
+        csv.append("shortCode, originalUrl, createdAt, clickCount\n");
+        for (ShortUrl url : urls) {
+            csv.append(url.getShortCode())
+        }
     }
 }

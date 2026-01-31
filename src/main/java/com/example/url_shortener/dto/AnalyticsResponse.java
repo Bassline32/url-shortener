@@ -1,4 +1,4 @@
-package dto;
+package com.example.url_shortener.dto;
 
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +19,9 @@ public class AnalyticsResponse {
         private LocalDateTime createdAt;
         private LocalDateTime lastClickAt;
 
-        public ShortUrlStatus(String shortCode, @NotNull String originalUrl, long totalClicks, long uniqueIp, @NotNull LocalDateTime createdAt, LocalDateTime lastClickAt) {
+        public ShortUrlStatus(String shortCode, @NotNull String originalUrl,
+                              long totalClicks, long uniqueIp,
+                              @NotNull LocalDateTime createdAt, LocalDateTime lastClickAt) {
         }
     }
 
@@ -50,7 +52,9 @@ public class AnalyticsResponse {
         private List<RefererStatus> topReferers;
         private List<BrowserStatus> topBrowsers;
 
-        public DetailedAnalitics(long totalClicks, long uniqueIps, Map<LocalDate, Long> clicksByDate, Map<Integer, Long> clicksByHour, List<RefererStatus> topReferers, List<BrowserStatus> topBrowsers) {
+        public DetailedAnalitics(long totalClicks, long uniqueIps,
+                                 Map<LocalDate, Long> clicksByDate, Map<Integer, Long> clicksByHour,
+                                 List<RefererStatus> topReferers, List<BrowserStatus> topBrowsers) {
         }
     }
 

@@ -26,4 +26,7 @@ public interface UrlRepository extends JpaRepository<ShortUrl, String> {
 
     //получаем активные ссылки
     List<ShortUrl> findByExpiresAtAfter(LocalDateTime now);
+
+    //проверка существования короткой ссылки по коду
+    boolean existByShortCode(String shortCode);
 }

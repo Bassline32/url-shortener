@@ -4,7 +4,7 @@ package com.example.url_shortener.service;
 import com.example.url_shortener.model.Click;
 import com.example.url_shortener.model.ShortUrl;
 import com.example.url_shortener.repository.ClickRepository;
-import dto.AnalyticsResponse;
+import com.example.url_shortener.dto.AnalyticsResponse;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
