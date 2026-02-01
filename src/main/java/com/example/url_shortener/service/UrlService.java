@@ -131,12 +131,17 @@ public class UrlService {
         return urls;
     }
 
+    //экспорт данных в CSV формат
     public String exportToCsv(List<ShortUrl> urls) {
         StringBuilder csv = new StringBuilder();
         //добавим заголовок csv
         csv.append("shortCode, originalUrl, createdAt, clickCount\n");
         for (ShortUrl url : urls) {
-            csv.append(url.getShortCode())
+            csv.append(url.getShortCode()).append(",")
+                    .append(url.getOriginalUrl()).append(",")
+                    .append(url.getCreatedAt()).append(",")
+                    .append(url.getClickCount()).append("\n");
         }
+        return csv.toString();
     }
 }
