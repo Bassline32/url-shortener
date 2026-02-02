@@ -120,7 +120,7 @@ public class UrlService {
     }
 
     //массовое создание ссылкок
-    public List<ShortUrl> createurls(List<CreateUrlRequest> requests) {
+    public List<ShortUrl> createUrls(List<CreateUrlRequest> requests) {
         List<ShortUrl> urls = new ArrayList<>();
         //для каждого элемента request в коллекции requests
         for (CreateUrlRequest request : requests) {

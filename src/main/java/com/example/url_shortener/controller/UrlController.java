@@ -2,6 +2,7 @@
 
 package com.example.url_shortener.controller;
 
+import com.example.url_shortener.dto.CreateUrlRequest;
 import com.example.url_shortener.model.ShortUrl;
 import com.example.url_shortener.service.UrlService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,5 +98,25 @@ public class UrlController {
     public ResponseEntity<List<ShortUrl>> searchActualUrls() {
         List<ShortUrl> urls = urlService.getActualUrls();
         return ResponseEntity.ok(urls);
+    }
+
+    //возвращаем список массово созданных ссылок
+    @PostMapping("/batch")
+    public ResponseEntity<List<ShortUrl>> createUrls(@RequestBody List<CreateUrlRequest> requests) {
+        List<ShortUrl> urls = urlService.createUrls(requests);
+        return ResponseEntity.ok(urls);
+    }
+
+    //экспорт данных в JSON и CSV форматах
+    @GetMapping("/export")
+    public ResponseEntity<?> exportUrls(@RequestParam String format) {
+        List<ShortUrl> urls = urlService.getAllUrls();
+        if (format.equals("json")) {
+            return ResponseEntity.ok(urls);
+        } else if ("csv".equals(format)) {
+            String csv = urlService.exportToCsv(urls);
+            return  ResponseEntity.ok(csv);
+        } else {
+            return ResponseEntity.badRequest().body("Неверный формат");        }
     }
 }
