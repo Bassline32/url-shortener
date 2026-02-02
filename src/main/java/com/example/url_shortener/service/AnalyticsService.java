@@ -1,6 +1,7 @@
 package com.example.url_shortener.service;
 
 
+import com.example.url_shortener.exception.UrlNotFoundException;
 import com.example.url_shortener.model.Click;
 import com.example.url_shortener.model.ShortUrl;
 import com.example.url_shortener.repository.ClickRepository;
@@ -65,7 +66,7 @@ public class AnalyticsService {
         ShortUrl url = urlService.getUrlByShortCode(shortcode);
         // проверка на наличие ссылки
         if (url == null) {
-            throw new RuntimeException("Link not found");
+            throw new UrlNotFoundException();
         }
         //получаем список всех кликов по короткой ссылке (делаем список элементов)
         List<Click> clicks = clickService.getClickCountByShortCode(shortcode);
