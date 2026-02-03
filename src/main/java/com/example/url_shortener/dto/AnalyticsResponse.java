@@ -1,5 +1,6 @@
 package com.example.url_shortener.dto;
 
+import com.example.url_shortener.model.ShortUrl;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
@@ -59,12 +60,15 @@ public class AnalyticsResponse {
     }
 
     @Data
-    public static class SummaryAnalitics {
+    public static class SummaryAnaliticsResponse {
         private int totalUrls;
         private int activeUrls;
         private int expiredUrls;
         private int totalClicks;
         private int todayClicks;
+        private double AverageClicksPerUrl;
+        private ShortUrl mostPopularUrl;
+        private int urlsCreatedToday;
         private Map<LocalDate, Long> clicksLastWeek;
     }
 
