@@ -1,15 +1,18 @@
 package com.example.url_shortener.service;
 
 
+import com.example.url_shortener.dto.AnalyticsResponse;
 import com.example.url_shortener.exception.UrlNotFoundException;
 import com.example.url_shortener.model.Click;
 import com.example.url_shortener.model.ShortUrl;
 import com.example.url_shortener.repository.ClickRepository;
-import com.example.url_shortener.dto.AnalyticsResponse;
+import com.example.url_shortener.repository.UrlRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -18,14 +21,21 @@ import java.util.stream.Collectors;
 @Service
 public class AnalyticsService {
 
+    //вот тудаю такой прикол, что @Autowiredне не работает, так как поля final
+    @Autowired
     private final UrlService urlService;
     private final ClickRepository clickRepository;
     private final ClickService clickService;
+    private final UrlRepository urlRepository;
 
-    public AnalyticsService(UrlService urlService, ShortUrl shortUrl, ClickRepository clickRepository, AnalyticsResponse analyticsResponse, ClickService clickService) {
+
+    public AnalyticsService(UrlService urlService, ShortUrl shortUrl,
+                            ClickRepository clickRepository, AnalyticsResponse analyticsResponse,
+                            ClickService clickService, UrlRepository urlRepository) {
         this.urlService = urlService;
         this.clickRepository = clickRepository;
         this.clickService = clickService;
+        this.urlRepository = urlRepository;
     }
 
     // Возвращаю общую статистику по одной ссылке
@@ -134,6 +144,63 @@ public class AnalyticsService {
                 topBrowsers
         );
     }
+
+    //собираем общую аналитику по коротким ссылкам и возвращаем её в виде объекта
+    // AnalyticsResponse
+
+    public AnalyticsResponse.SummaryAnaliticsResponse getAnaliticsSummary() {
+        //получим все ссылки
+        List<ShortUrl> allUrls = urlRepository.findAll();
+        //получим текущее время
+        LocalDateTime now = LocalDateTime.now();
+        //общее количество ссылок
+        int totalUrls = allUrls.size();
+        //активные ссылки
+        int activeUrls = (int) allUrls.stream()
+                .filter(url -> url.getExpiresAt() == null || url.getExpiresAt().isAfter(now))
+                .count();
+        //просроченные ссылки
+        int expiredUrls = totalUrls - activeUrls;
+        //общее количество кликов
+        int totalClick = allUrls.stream().mapToInt(ShortUrl::getClickCount).sum();
+        //количество кликов за сегодня
+        int todayClicks = allUrls.stream().filter(url -> url.getCreatedAt()
+                        .toLocalDate()
+                        .equals(now.toLocalDate()))
+                .mapToInt(ShortUrl::getClickCount)
+                .sum();
+        //среднее количестов кликов на ссылку
+        double averageClickPerUrl = (double) totalClick / totalUrls;
+        //самая популярная ссылка
+        ShortUrl mostPopularUrl = allUrls.stream()
+                .max(Comparator.comparingInt(ShortUrl::getClickCount))
+                .orElse(null);
+        //количество ссылок, созданных сегодня
+        int urlCreatedToday = (int) allUrls.stream().filter(url -> url.getCreatedAt()
+                        .toLocalDate()
+                        .equals(now.toLocalDate()))
+                .count();
+        //количество кликов за последнюю неделю
+        Map<LocalDate, Long> clicksLastWeek = allUrls.stream()
+                .filter(url -> url.getCreatedAt().toLocalDate().isAfter(now.minusDays(7).toLocalDate()))
+                .collect(Collectors.groupingBy(url -> url.getCreatedAt().toLocalDate(), Collectors.summingLong(ShortUrl::getClickCount)));
+
+        AnalyticsResponse.SummaryAnaliticsResponse response = new AnalyticsResponse.SummaryAnaliticsResponse();
+
+        response.setActiveUrls(activeUrls);
+        response.setTodayClicks(totalClick);
+        response.setExpiredUrls(expiredUrls);
+        response.setMostPopularUrl(mostPopularUrl);
+        response.setClicksLastWeek(clicksLastWeek);
+        response.setTotalClicks(todayClicks);
+        response.setTotalUrls(totalUrls);
+        response.setAverageClicksPerUrl(averageClickPerUrl);
+        response.setUrlsCreatedToday(urlCreatedToday);
+
+
+        return response;
+    }
+
 }
 
 

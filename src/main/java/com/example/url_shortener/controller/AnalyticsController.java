@@ -1,8 +1,8 @@
 package com.example.url_shortener.controller;
 
 
-import com.example.url_shortener.service.AnalyticsService;
 import com.example.url_shortener.dto.AnalyticsResponse;
+import com.example.url_shortener.service.AnalyticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/urls")
 public class AnalyticsController {
 
-     private final AnalyticsService analyticsService;
+    private final AnalyticsService analyticsService;
 
-     @Autowired
+    @Autowired
     public AnalyticsController(AnalyticsService analyticsService) {
         this.analyticsService = analyticsService;
     }
@@ -32,4 +32,9 @@ public class AnalyticsController {
         return analyticsService.getDetailedAnalitics(shortCode);
     }
 
+    //общая суммарная аналитиика
+    @GetMapping("/summary")
+    public AnalyticsResponse.SummaryAnaliticsResponse getSummaryAnalitics() {
+        return analyticsService.getAnaliticsSummary();
+    }
 }
