@@ -2,8 +2,7 @@ package com.example.url_shortener.dto;
 
 import com.example.url_shortener.model.ShortUrl;
 import lombok.Data;
-import org.jetbrains.annotations.NotNull;
-
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;

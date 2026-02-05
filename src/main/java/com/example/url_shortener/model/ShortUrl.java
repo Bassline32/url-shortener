@@ -1,8 +1,9 @@
 package com.example.url_shortener.model;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import org.jetbrains.annotations.NotNull;
 import java.time.LocalDateTime;
+
 
 
 @Data
