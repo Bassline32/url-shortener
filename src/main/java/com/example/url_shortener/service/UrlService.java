@@ -4,6 +4,7 @@ import com.example.url_shortener.dto.CreateUrlRequest;
 import com.example.url_shortener.exception.ShortCodeAlreadyExistsException;
 import com.example.url_shortener.model.ShortUrl;
 import com.example.url_shortener.repository.UrlRepository;
+import entity.ShortUrlEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,17 +35,30 @@ public class UrlService {
     //генерация короткого URL
     public ShortUrl createShortUrl(String originalUrl) {
         String shortCode = shortCode();
-        ShortUrl shortUrl = new ShortUrl();
-        shortUrl.setShortCode(shortCode);
-        shortUrl.setOriginalUrl(originalUrl);
+        ShortUrlEntity shortUrlEntity = new ShortUrlEntity();
+        shortUrlEntity.setShortCode(shortCode);
+        shortUrlEntity.setOriginalUrl(originalUrl);
         //устанавливаем время создания ссылки
-        shortUrl.setCreatedAt(LocalDateTime.now());
-        return urlRepository.save(shortUrl);
+        shortUrlEntity.setCreatedAt(LocalDateTime.now());
+        ShortUrlEntity savedShortUrl = urlRepository.save(shortUrlEntity);
+        return mapEntityToShortUrl(savedShortUrl);
+    }
+
+    private static  ShortUrl mapEntityToShortUrl(ShortUrlEntity savedShortUrl) {
+        ShortUrl shortUrl = new ShortUrl();
+        shortUrl.setCreatedAt(savedShortUrl.getCreatedAt());
+        shortUrl.setShortCode(savedShortUrl.getShortCode());
+        shortUrl.setOriginalUrl(savedShortUrl.getOriginalUrl());
+        shortUrl.setClickCount(savedShortUrl.getClickCount());
+        shortUrl.setExpiresAt(savedShortUrl.getExpiresAt());
+        return shortUrl;
     }
 
     //получаем все юрл
     public List<ShortUrl> getAllUrls() {
-        return urlRepository.findAll();
+        return urlRepository.findAll().stream()
+                .map(UrlService::mapEntityToShortUrl)
+                .toList();
     }
 
     //удаляем юрл по короткому коду
@@ -54,8 +68,12 @@ public class UrlService {
 
     //получение короткой ссылки по короткому коду.
     public ShortUrl getUrlByShortCode(String shortCode) {
-        Optional<ShortUrl> optionalShortUrl = urlRepository.findByShortCode(shortCode);
-        return optionalShortUrl.orElse(null);
+        Optional<ShortUrlEntity> optionalShortUrl = urlRepository.findByShortCode(shortCode);
+
+        return optionalShortUrl.map(UrlService::mapEntityToShortUrl)
+                .orElse(null);
+
+
     }
 
     //генерируем shortCode
@@ -76,32 +94,42 @@ public class UrlService {
         Pageable pageable = PageRequest.of(page, size, sort);
 
         //получаю данные из репозитория
-        Page<ShortUrl> urlPage = urlRepository.findAll(pageable);
+        Page<ShortUrlEntity> urlPage = urlRepository.findAll(pageable);
 
         //возвращаем отсортированную страницу
-        return urlPage.getContent();
+        return urlPage
+                .map(UrlService::mapEntityToShortUrl)
+                .getContent();
     }
 
     //получение просроченных ссылок
     public List<ShortUrl> getExpiredUrls() {
         LocalDateTime now = LocalDateTime.now();
-        return urlRepository.findByExpiresAtBefore(now);
+        return urlRepository.findByExpiresAtBefore(now).stream()
+                .map(UrlService::mapEntityToShortUrl)
+                .toList();
     }
 
     //получение активных ссылок
     public List<ShortUrl> getActualUrls() {
         LocalDateTime now = LocalDateTime.now();
-        return urlRepository.findByExpiresAtAfter(now);
+        return urlRepository.findByExpiresAtAfter(now).stream()
+                .map(UrlService::mapEntityToShortUrl)
+                .toList();
     }
 
     //получение результатов поиска по домену
     public List<ShortUrl> searchUrlsByDomain(String domain) {
-        return urlRepository.findByOriginalUrlContainingDomain(domain);
+        return urlRepository.findByOriginalUrlContainingDomain(domain).stream()
+                .map(UrlService::mapEntityToShortUrl)
+                .toList();
     }
 
     //поиск по ключевому слову
     public List<ShortUrl> searchUrlByKeyWord(String keyword) {
-        return urlRepository.findByOriginalUrlContainingKeyword(keyword);
+        return urlRepository.findByOriginalUrlContainingKeyword(keyword).stream()
+                .map(UrlService::mapEntityToShortUrl)
+                .toList();
     }
 
     //обработка ошибок, если кастомный код уже занят
@@ -110,13 +138,14 @@ public class UrlService {
             throw new ShortCodeAlreadyExistsException("Такой кастомный код уже существует " + customCode);
         }
 
-        ShortUrl shortUrl = new ShortUrl();
+        ShortUrlEntity shortUrlEntity = new ShortUrlEntity();
         //shortCode == generateShortcode
-        shortUrl.setShortCode(customCode != null ? customCode : shortCode());
-        shortUrl.setOriginalUrl(originalUrl);
-        shortUrl.setCreatedAt(LocalDateTime.now());
-        shortUrl.setExpiresAt(expiresAt);
-        return urlRepository.save(shortUrl);
+        shortUrlEntity.setShortCode(customCode != null ? customCode : shortCode());
+        shortUrlEntity.setOriginalUrl(originalUrl);
+        shortUrlEntity.setCreatedAt(LocalDateTime.now());
+        shortUrlEntity.setExpiresAt(expiresAt);
+
+        return mapEntityToShortUrl(urlRepository.save(shortUrlEntity));
     }
 
     //массовое создание ссылкок

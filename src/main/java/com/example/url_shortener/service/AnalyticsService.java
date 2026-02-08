@@ -7,6 +7,7 @@ import com.example.url_shortener.model.Click;
 import com.example.url_shortener.model.ShortUrl;
 import com.example.url_shortener.repository.ClickRepository;
 import com.example.url_shortener.repository.UrlRepository;
+import entity.ShortUrlEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -150,7 +151,7 @@ public class AnalyticsService {
 
     public AnalyticsResponse.SummaryAnaliticsResponse getAnaliticsSummary() {
         //получим все ссылки
-        List<ShortUrl> allUrls = urlRepository.findAll();
+        List<ShortUrlEntity> allUrls = urlRepository.findAll();
         //получим текущее время
         LocalDateTime now = LocalDateTime.now();
         //общее количество ссылок
@@ -162,18 +163,19 @@ public class AnalyticsService {
         //просроченные ссылки
         int expiredUrls = totalUrls - activeUrls;
         //общее количество кликов
-        int totalClick = allUrls.stream().mapToInt(ShortUrl::getClickCount).sum();
+        int totalClick = allUrls.stream().mapToInt(ShortUrlEntity::getClickCount).sum();
         //количество кликов за сегодня
         int todayClicks = allUrls.stream().filter(url -> url.getCreatedAt()
                         .toLocalDate()
                         .equals(now.toLocalDate()))
-                .mapToInt(ShortUrl::getClickCount)
+                .mapToInt(ShortUrlEntity::getClickCount)
                 .sum();
         //среднее количестов кликов на ссылку
         double averageClickPerUrl = (double) totalClick / totalUrls;
         //самая популярная ссылка
         ShortUrl mostPopularUrl = allUrls.stream()
-                .max(Comparator.comparingInt(ShortUrl::getClickCount))
+                .max(Comparator.comparingInt(ShortUrlEntity::getClickCount))
+                .map()
                 .orElse(null);
         //количество ссылок, созданных сегодня
         int urlCreatedToday = (int) allUrls.stream().filter(url -> url.getCreatedAt()

@@ -2,11 +2,14 @@ package com.example.url_shortener.model;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 
 
 @Data
+@NoArgsConstructor
 public class ShortUrl {
 
     @NotNull
@@ -28,7 +31,4 @@ public class ShortUrl {
     //счётчик переходов по ссылке
     private int clickCount;
 
-
-    public ShortUrl() {
-    }
 }
