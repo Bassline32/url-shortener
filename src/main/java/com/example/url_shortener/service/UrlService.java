@@ -5,6 +5,7 @@ import com.example.url_shortener.exception.ShortCodeAlreadyExistsException;
 import com.example.url_shortener.model.ShortUrl;
 import com.example.url_shortener.repository.UrlRepository;
 import entity.ShortUrlEntity;
+import mapper.ShortUtlMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +22,6 @@ import java.util.Random;
 
 @Service
 public class UrlService {
-
 
     private final UrlRepository urlRepository;
 
@@ -41,23 +41,14 @@ public class UrlService {
         //устанавливаем время создания ссылки
         shortUrlEntity.setCreatedAt(LocalDateTime.now());
         ShortUrlEntity savedShortUrl = urlRepository.save(shortUrlEntity);
-        return mapEntityToShortUrl(savedShortUrl);
+        return ShortUtlMapper.mapUrlEntityToDto(savedShortUrl);
     }
 
-    private static  ShortUrl mapEntityToShortUrl(ShortUrlEntity savedShortUrl) {
-        ShortUrl shortUrl = new ShortUrl();
-        shortUrl.setCreatedAt(savedShortUrl.getCreatedAt());
-        shortUrl.setShortCode(savedShortUrl.getShortCode());
-        shortUrl.setOriginalUrl(savedShortUrl.getOriginalUrl());
-        shortUrl.setClickCount(savedShortUrl.getClickCount());
-        shortUrl.setExpiresAt(savedShortUrl.getExpiresAt());
-        return shortUrl;
-    }
 
     //получаем все юрл
     public List<ShortUrl> getAllUrls() {
         return urlRepository.findAll().stream()
-                .map(UrlService::mapEntityToShortUrl)
+                .map(ShortUtlMapper::mapUrlEntityToDto)
                 .toList();
     }
 
@@ -70,7 +61,7 @@ public class UrlService {
     public ShortUrl getUrlByShortCode(String shortCode) {
         Optional<ShortUrlEntity> optionalShortUrl = urlRepository.findByShortCode(shortCode);
 
-        return optionalShortUrl.map(UrlService::mapEntityToShortUrl)
+        return optionalShortUrl.map(ShortUtlMapper::mapUrlEntityToDto)
                 .orElse(null);
 
 
@@ -98,7 +89,7 @@ public class UrlService {
 
         //возвращаем отсортированную страницу
         return urlPage
-                .map(UrlService::mapEntityToShortUrl)
+                .map(ShortUtlMapper::mapUrlEntityToDto)
                 .getContent();
     }
 
@@ -106,7 +97,7 @@ public class UrlService {
     public List<ShortUrl> getExpiredUrls() {
         LocalDateTime now = LocalDateTime.now();
         return urlRepository.findByExpiresAtBefore(now).stream()
-                .map(UrlService::mapEntityToShortUrl)
+                .map(ShortUtlMapper::mapUrlEntityToDto)
                 .toList();
     }
 
@@ -114,21 +105,21 @@ public class UrlService {
     public List<ShortUrl> getActualUrls() {
         LocalDateTime now = LocalDateTime.now();
         return urlRepository.findByExpiresAtAfter(now).stream()
-                .map(UrlService::mapEntityToShortUrl)
+                .map(ShortUtlMapper::mapUrlEntityToDto)
                 .toList();
     }
 
     //получение результатов поиска по домену
     public List<ShortUrl> searchUrlsByDomain(String domain) {
         return urlRepository.findByOriginalUrlContainingDomain(domain).stream()
-                .map(UrlService::mapEntityToShortUrl)
+                .map(ShortUtlMapper::mapUrlEntityToDto)
                 .toList();
     }
 
     //поиск по ключевому слову
     public List<ShortUrl> searchUrlByKeyWord(String keyword) {
         return urlRepository.findByOriginalUrlContainingKeyword(keyword).stream()
-                .map(UrlService::mapEntityToShortUrl)
+                .map(ShortUtlMapper::mapUrlEntityToDto)
                 .toList();
     }
 
@@ -145,7 +136,7 @@ public class UrlService {
         shortUrlEntity.setCreatedAt(LocalDateTime.now());
         shortUrlEntity.setExpiresAt(expiresAt);
 
-        return mapEntityToShortUrl(urlRepository.save(shortUrlEntity));
+        return ShortUtlMapper.mapUrlEntityToDto(urlRepository.save(shortUrlEntity));
     }
 
     //массовое создание ссылкок
