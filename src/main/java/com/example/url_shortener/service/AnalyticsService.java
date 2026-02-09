@@ -187,7 +187,7 @@ public class AnalyticsService {
         Map<LocalDate, Long> clicksLastWeek = allUrls.stream()
                 .filter(url -> url.getCreatedAt().toLocalDate().isAfter(now.minusDays(7).toLocalDate()))
                 .collect(Collectors.groupingBy(url -> url.getCreatedAt().toLocalDate(),
-                         Collectors.summingLong(click -> click.getClickCount())));
+                         Collectors.summingLong(ShortUrlEntity::getClickCount)));
 
         AnalyticsResponse.SummaryAnaliticsResponse response = new AnalyticsResponse.SummaryAnaliticsResponse();
 
