@@ -8,6 +8,7 @@ import com.example.url_shortener.model.ShortUrl;
 import com.example.url_shortener.repository.ClickRepository;
 import com.example.url_shortener.repository.UrlRepository;
 import entity.ShortUrlEntity;
+import mapper.ShortUtlMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -175,7 +176,7 @@ public class AnalyticsService {
         //самая популярная ссылка
         ShortUrl mostPopularUrl = allUrls.stream()
                 .max(Comparator.comparingInt(ShortUrlEntity::getClickCount))
-                .map()
+                .map(ShortUtlMapper::mapUrlEntityToDto)
                 .orElse(null);
         //количество ссылок, созданных сегодня
         int urlCreatedToday = (int) allUrls.stream().filter(url -> url.getCreatedAt()
@@ -185,7 +186,8 @@ public class AnalyticsService {
         //количество кликов за последнюю неделю
         Map<LocalDate, Long> clicksLastWeek = allUrls.stream()
                 .filter(url -> url.getCreatedAt().toLocalDate().isAfter(now.minusDays(7).toLocalDate()))
-                .collect(Collectors.groupingBy(url -> url.getCreatedAt().toLocalDate(), Collectors.summingLong(ShortUrl::getClickCount)));
+                .collect(Collectors.groupingBy(url -> url.getCreatedAt().toLocalDate(),
+                         Collectors.summingLong(click -> click.getClickCount())));
 
         AnalyticsResponse.SummaryAnaliticsResponse response = new AnalyticsResponse.SummaryAnaliticsResponse();
 
