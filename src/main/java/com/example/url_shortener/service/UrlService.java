@@ -118,14 +118,14 @@ public class UrlService {
 
     //поиск по ключевому слову
     public List<ShortUrl> searchUrlByKeyWord(String keyword) {
-        return urlRepository.findByOriginalUrlContainingKeyword(keyword).stream()
+        return urlRepository.findByOriginalUrlContaining(keyword).stream()
                 .map(ShortUtlMapper::mapUrlEntityToDto)
                 .toList();
     }
 
     //обработка ошибок, если кастомный код уже занят
     public ShortUrl createShortUrl(String originalUrl, String customCode, LocalDateTime expiresAt) {
-        if (customCode != null && urlRepository.existByShortCode(customCode)) {
+        if (customCode != null && urlRepository.existsByShortCode(customCode)) {
             throw new ShortCodeAlreadyExistsException("Такой кастомный код уже существует " + customCode);
         }
 

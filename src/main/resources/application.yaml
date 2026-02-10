@@ -11,7 +11,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate  # Используем Flyway для миграций
+      ddl-auto: create  # Используем Flyway для миграций
       show-sql: true
       format_sql: true
       dialect: org.hibernate.dialect.PostgreSQLDialect
