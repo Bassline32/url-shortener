@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ClickRepository extends JpaRepository<ClickEntity, Long> {
-    List<ClickEntity> findByAllShortCode(String shortCode);
+    List<ClickEntity> findByShortCode(String shortCode);
 }

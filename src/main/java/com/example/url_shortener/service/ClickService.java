@@ -2,7 +2,6 @@ package com.example.url_shortener.service;
 
 
 import com.example.url_shortener.entity.ClickEntity;
-import com.example.url_shortener.model.Click;
 import com.example.url_shortener.repository.ClickRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,7 @@ public class ClickService {
     //Возвращаем количество кликов по указанному короткому коду
     // Stream API
     public List<ClickEntity> getClickCountByShortCode(String shortCode) {
-        return clickRepository.findByAllShortCode(shortCode);
+        return clickRepository.findByShortCode(shortCode);
     }
 
     //метод для отслеживания кликов и информации по ним

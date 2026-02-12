@@ -4,7 +4,6 @@ package com.example.url_shortener.service;
 import com.example.url_shortener.dto.AnalyticsResponse;
 import com.example.url_shortener.entity.ClickEntity;
 import com.example.url_shortener.exception.UrlNotFoundException;
-import com.example.url_shortener.model.Click;
 import com.example.url_shortener.model.ShortUrl;
 import com.example.url_shortener.repository.ClickRepository;
 import com.example.url_shortener.repository.UrlRepository;
@@ -49,7 +48,7 @@ public class AnalyticsService {
             throw new RuntimeException("Link not Found");
         }
         // получаем список кликов по ссылке
-        List<com.example.url_shortener.entity.ClickEntity> clicks = clickRepository.findByAllShortCode(shortCode);
+        List<com.example.url_shortener.entity.ClickEntity> clicks = clickRepository.findByShortCode(shortCode);
         // подчёт общего количества кликов
         long totalClicks = clicks.size();
         //считаем уникальные IP
