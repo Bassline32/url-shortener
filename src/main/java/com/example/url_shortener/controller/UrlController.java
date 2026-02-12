@@ -73,15 +73,15 @@ public class UrlController {
     }
 
     //ищем ссылки по ключевому слову
-    @GetMapping("/search")
-    public ResponseEntity<List<ShortUrl>> searchUrlsByKeyword(@RequestParam String keyword) {
+    @GetMapping("/search/{keyword}")
+    public ResponseEntity<List<ShortUrl>> searchUrlsByKeyword(@PathVariable String keyword) {
         List<ShortUrl> urls = urlService.searchUrlByKeyWord(keyword);
         return ResponseEntity.ok(urls);
     }
 
     //ищем ссылки по домену
-    @GetMapping("/search")
-    public ResponseEntity<List<ShortUrl>> searchUrlsByDomain(@RequestParam String domain) {
+    @GetMapping("/search/{domain}")
+    public ResponseEntity<List<ShortUrl>> searchUrlsByDomain(@PathVariable String domain) {
         List<ShortUrl> urls = urlService.searchUrlsByDomain(domain);
         return ResponseEntity.ok(urls);
     }
@@ -115,8 +115,9 @@ public class UrlController {
             return ResponseEntity.ok(urls);
         } else if ("csv".equals(format)) {
             String csv = urlService.exportToCsv(urls);
-            return  ResponseEntity.ok(csv);
+            return ResponseEntity.ok(csv);
         } else {
-            return ResponseEntity.badRequest().body("Неверный формат");        }
+            return ResponseEntity.badRequest().body("Неверный формат");
+        }
     }
 }
