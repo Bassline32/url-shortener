@@ -1,6 +1,7 @@
 package com.example.url_shortener.service;
 
 
+import com.example.url_shortener.entity.ClickEntity;
 import com.example.url_shortener.model.Click;
 import com.example.url_shortener.repository.ClickRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,24 +22,24 @@ public class ClickService {
     }
 
     //сохраняем новый клик в бд
-    public void save(Click click) {
+    public void save(ClickEntity click) {
         clickRepository.save(click);
     }
 
     //возвращаем список всех кликов
-    public List<Click> getAllCliks() {
+    public List<ClickEntity> getAllCliks() {
         return clickRepository.findAll();
     }
 
     //Возвращаем количество кликов по указанному короткому коду
     // Stream API
-    public List<Click> getClickCountByShortCode(String shortCode) {
+    public List<ClickEntity> getClickCountByShortCode(String shortCode) {
         return clickRepository.findByAllShortCode(shortCode);
     }
 
     //метод для отслеживания кликов и информации по ним
     public void trackClick(String shortCode, HttpServletRequest request) {
-        Click click = new Click();
+        ClickEntity click = new ClickEntity();
         click.setShortCode(shortCode);
         click.setTimestamp(LocalDateTime.now());
         //возвращаем ip фдрес клинта (71)

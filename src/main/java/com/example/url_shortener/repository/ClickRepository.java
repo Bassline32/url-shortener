@@ -1,12 +1,12 @@
 package com.example.url_shortener.repository;
 
-import com.example.url_shortener.model.Click;
+import com.example.url_shortener.entity.ClickEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface ClickRepository extends JpaRepository<Click, Long> {
-    List<Click> findByAllShortCode(String shortCode);
+public interface ClickRepository extends JpaRepository<ClickEntity, Long> {
+    List<ClickEntity> findByAllShortCode(String shortCode);
 }

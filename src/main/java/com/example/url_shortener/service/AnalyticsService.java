@@ -2,6 +2,7 @@ package com.example.url_shortener.service;
 
 
 import com.example.url_shortener.dto.AnalyticsResponse;
+import com.example.url_shortener.entity.ClickEntity;
 import com.example.url_shortener.exception.UrlNotFoundException;
 import com.example.url_shortener.model.Click;
 import com.example.url_shortener.model.ShortUrl;
@@ -48,12 +49,12 @@ public class AnalyticsService {
             throw new RuntimeException("Link not Found");
         }
         // получаем список кликов по ссылке
-        List<Click> clicks = clickRepository.findByAllShortCode(shortCode);
+        List<com.example.url_shortener.entity.ClickEntity> clicks = clickRepository.findByAllShortCode(shortCode);
         // подчёт общего количества кликов
         long totalClicks = clicks.size();
         //считаем уникальные IP
         long uniqueIp = clicks.stream()
-                .map(Click::getIpAddress)
+                .map(com.example.url_shortener.entity.ClickEntity::getIpAddress)
                 .distinct()
                 .count();
 
@@ -80,14 +81,14 @@ public class AnalyticsService {
             throw new UrlNotFoundException();
         }
         //получаем список всех кликов по короткой ссылке (делаем список элементов)
-        List<Click> clicks = clickService.getClickCountByShortCode(shortcode);
+        List<ClickEntity> clicks = clickService.getClickCountByShortCode(shortcode);
 
         //получаем общее количество кликов (считаем элементы в списке)
         long totalClicks = clicks.size();
 
         //получаем уникальных посетителей
         long uniqueIps = clicks.stream().
-                map(Click::getIpAddress).
+                map(ClickEntity::getIpAddress).
                 distinct().
                 count();
 
@@ -105,7 +106,7 @@ public class AnalyticsService {
         //получаем рефереры
         List<AnalyticsResponse.RefererStatus> topReferers = clicks.stream()
                 //получаем реферер из каждого клика
-                .map(Click::getReferer)
+                .map(ClickEntity::getReferer)
                 //отфильтровываем клики без рефереров(лямбда выражение)
                 .filter(referer -> referer != null && referer.isEmpty())
                 //раскладвываю клики по реферерам и считаю их значение
@@ -126,7 +127,7 @@ public class AnalyticsService {
         //получаем браузеры
         List<AnalyticsResponse.BrowserStatus> topBrowsers = clicks.stream()
                 //получаем браузер из каждого клика
-                .map(Click::getUserAgent)
+                .map(ClickEntity::getUserAgent)
                 .filter(browser -> browser != null && browser.isEmpty())
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .entrySet().stream()
