@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication(scanBasePackages = {"com.example.url_shortener"})
-@EnableJpaRepositories(basePackages = {"com.example.url_shortener.repository.UrlRepository", "entity"})
+@EnableJpaRepositories(basePackages = {"com.example.url_shortener"})
 public class UrlShortenerApplication {
 
     public static void main(String[] args) {

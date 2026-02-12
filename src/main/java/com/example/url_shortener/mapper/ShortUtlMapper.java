@@ -6,6 +6,7 @@ import com.example.url_shortener.entity.ShortUrlEntity;
 
 public class ShortUtlMapper {
 
+
     public static ShortUrl mapUrlEntityToDto(ShortUrlEntity shortUrlEntity) {
         ShortUrl shortUrl = new ShortUrl();
         shortUrl.setCreatedAt(shortUrlEntity.getCreatedAt());

@@ -23,17 +23,16 @@ import java.util.stream.Collectors;
 @Service
 public class AnalyticsService {
 
-    //вот тудаю такой прикол, что @Autowiredне не работает, так как поля final
-    @Autowired
     private final UrlService urlService;
     private final ClickRepository clickRepository;
     private final ClickService clickService;
     private final UrlRepository urlRepository;
 
-
-    public AnalyticsService(UrlService urlService, ShortUrl shortUrl,
-                            ClickRepository clickRepository, AnalyticsResponse analyticsResponse,
-                            ClickService clickService, UrlRepository urlRepository) {
+    @Autowired
+    public AnalyticsService(UrlService urlService,
+                            ClickRepository clickRepository,
+                            ClickService clickService,
+                            UrlRepository urlRepository) {
         this.urlService = urlService;
         this.clickRepository = clickRepository;
         this.clickService = clickService;
