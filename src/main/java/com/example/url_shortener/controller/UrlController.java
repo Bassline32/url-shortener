@@ -56,7 +56,7 @@ public class UrlController {
     }
 
     //пагинация и сортировка
-    @GetMapping
+    @GetMapping("/filtred")
     public ResponseEntity<List<ShortUrl>> getUrls(
             //праметр метода номер страницы
             @RequestParam(defaultValue = "0") int page,
