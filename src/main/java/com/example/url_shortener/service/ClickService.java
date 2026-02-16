@@ -46,7 +46,8 @@ public class ClickService {
         click.setUserAgent(request.getHeader("User-Agent"));
         //используется для сохранения информации о том,
         // с какой страницы пришел пользователь, в объекте click (75)
-        click.setReferer(request.getHeader("Referer"));
+        //@TODO ПОДУМАТЬ ОТКУДА БРАТЬ РЕФЕР И ЗАЧЕМ
+        click.setReferer("Referer");
         clickRepository.save(click);
     }
 }

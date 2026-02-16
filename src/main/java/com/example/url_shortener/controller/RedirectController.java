@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +33,7 @@ public class RedirectController {
     }
 
     @GetMapping("/{shortCode}")
+    @Transactional
     public ResponseEntity<Void> redirect(@PathVariable String shortCode, HttpServletRequest request) {
 
         Optional<ShortUrl> optionalUrl = Optional.ofNullable(urlService.getUrlByShortCode(shortCode));
@@ -43,6 +45,7 @@ public class RedirectController {
                 return ResponseEntity.status(HttpStatus.GONE).body(null);
             }
             clickService.trackClick(shortCode, request);
+            //@TODO FIX REDIRECT TO origin URL
             return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(shortUrl.getOriginalUrl())).build();
 
         } else {

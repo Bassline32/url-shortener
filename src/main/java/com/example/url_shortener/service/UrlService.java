@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ public class UrlService {
     }
 
     //удаляем юрл по короткому коду
+    @Transactional
     public void deleteUrl(String shortCode) {
         urlRepository.deleteByShortCode(shortCode);
     }
@@ -102,6 +104,7 @@ public class UrlService {
     }
 
     //получение активных ссылок
+    // TODO ПОПРАВИТЬ ВЫВОД актуальных ссылок
     public List<ShortUrl> getActualUrls() {
         LocalDateTime now = LocalDateTime.now();
         return urlRepository.findByExpiresAtAfter(now).stream()

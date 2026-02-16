@@ -73,16 +73,9 @@ public class UrlController {
     }
 
     //ищем ссылки по ключевому слову
-    @GetMapping("/search/{keyword}")
+    @GetMapping("/search/keyword/{keyword}")
     public ResponseEntity<List<ShortUrl>> searchUrlsByKeyword(@PathVariable String keyword) {
         List<ShortUrl> urls = urlService.searchUrlByKeyWord(keyword);
-        return ResponseEntity.ok(urls);
-    }
-
-    //ищем ссылки по домену
-    @GetMapping("/search/{domain}")
-    public ResponseEntity<List<ShortUrl>> searchUrlsByDomain(@PathVariable String domain) {
-        List<ShortUrl> urls = urlService.searchUrlsByDomain(domain);
         return ResponseEntity.ok(urls);
     }
 
