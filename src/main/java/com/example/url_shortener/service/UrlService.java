@@ -1,11 +1,11 @@
 package com.example.url_shortener.service;
 
 import com.example.url_shortener.dto.CreateUrlRequest;
+import com.example.url_shortener.entity.ShortUrlEntity;
 import com.example.url_shortener.exception.ShortCodeAlreadyExistsException;
+import com.example.url_shortener.mapper.ShortUtlMapper;
 import com.example.url_shortener.model.ShortUrl;
 import com.example.url_shortener.repository.UrlRepository;
-import com.example.url_shortener.entity.ShortUrlEntity;
-import com.example.url_shortener.mapper.ShortUtlMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -105,9 +105,10 @@ public class UrlService {
 
     //получение активных ссылок
     // TODO ПОПРАВИТЬ ВЫВОД актуальных ссылок
+    @Transactional
     public List<ShortUrl> getActualUrls() {
         LocalDateTime now = LocalDateTime.now();
-        return urlRepository.findByExpiresAtAfter(now).stream()
+        return urlRepository.findByExpiresAtAfterOrExpiresAtIsNull(now).stream()
                 .map(ShortUtlMapper::mapUrlEntityToDto)
                 .toList();
     }

@@ -45,7 +45,7 @@ public class RedirectController {
                 return ResponseEntity.status(HttpStatus.GONE).body(null);
             }
             clickService.trackClick(shortCode, request);
-            //@TODO FIX REDIRECT TO origin URL
+            //@TODO FIX REDIRECT TO origin URL (It Actual in work)
             return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(shortUrl.getOriginalUrl())).build();
 
         } else {
