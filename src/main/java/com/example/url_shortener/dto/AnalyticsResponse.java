@@ -1,16 +1,20 @@
 package com.example.url_shortener.dto;
 
 import com.example.url_shortener.model.ShortUrl;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import jakarta.validation.constraints.NotNull;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+
 public class AnalyticsResponse {
 
     @Data
+    @AllArgsConstructor
     public static class ShortUrlStatus {
         private String shortCode;
         private String originalUrl;
@@ -19,31 +23,26 @@ public class AnalyticsResponse {
         private LocalDateTime createdAt;
         private LocalDateTime lastClickAt;
 
-        public ShortUrlStatus(String shortCode, @NotNull String originalUrl,
-                              long totalClicks, long uniqueIp,
-                              @NotNull LocalDateTime createdAt, LocalDateTime lastClickAt) {
-        }
     }
 
     @Data
+    @AllArgsConstructor
     public static class RefererStatus {
         private String referer;
         private long count;
 
-        public RefererStatus(@NotNull String key, Long value) {
-        }
     }
 
     @Data
+    @AllArgsConstructor
     public static class BrowserStatus {
         private String browser;
         private long count;
 
-        public BrowserStatus(@NotNull String key, Long value) {
-        }
     }
 
     @Data
+    @AllArgsConstructor
     public static class DetailedAnalitics {
         private int totalClicks;
         private int uniqueIps;
@@ -52,13 +51,11 @@ public class AnalyticsResponse {
         private List<RefererStatus> topReferers;
         private List<BrowserStatus> topBrowsers;
 
-        public DetailedAnalitics(long totalClicks, long uniqueIps,
-                                 Map<LocalDate, Long> clicksByDate, Map<Integer, Long> clicksByHour,
-                                 List<RefererStatus> topReferers, List<BrowserStatus> topBrowsers) {
-        }
     }
 
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class SummaryAnaliticsResponse {
         private int totalUrls;
         private int activeUrls;

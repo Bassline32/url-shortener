@@ -65,8 +65,8 @@ public class AnalyticsService {
         return new AnalyticsResponse.ShortUrlStatus(
                 shortCode,
                 url.getOriginalUrl(),
-                totalClicks,
-                uniqueIp,
+                (int) totalClicks,
+                (int) uniqueIp,
                 url.getCreatedAt(),
                 lastClickAt
         );
@@ -137,8 +137,8 @@ public class AnalyticsService {
 
 
         return new AnalyticsResponse.DetailedAnalitics(
-                totalClicks,
-                uniqueIps,
+                (int) totalClicks,
+                (int) uniqueIps,
                 clicksByDate,
                 clicksByHour,
                 topReferers,
