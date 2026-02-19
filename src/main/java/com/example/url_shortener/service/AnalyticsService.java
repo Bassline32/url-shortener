@@ -3,12 +3,12 @@ package com.example.url_shortener.service;
 
 import com.example.url_shortener.dto.AnalyticsResponse;
 import com.example.url_shortener.entity.ClickEntity;
+import com.example.url_shortener.entity.ShortUrlEntity;
 import com.example.url_shortener.exception.UrlNotFoundException;
+import com.example.url_shortener.mapper.ShortUtlMapper;
 import com.example.url_shortener.model.ShortUrl;
 import com.example.url_shortener.repository.ClickRepository;
 import com.example.url_shortener.repository.UrlRepository;
-import com.example.url_shortener.entity.ShortUrlEntity;
-import com.example.url_shortener.mapper.ShortUtlMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -150,52 +150,66 @@ public class AnalyticsService {
     // AnalyticsResponse
 
     public AnalyticsResponse.SummaryAnaliticsResponse getAnaliticsSummary() {
+
         //получим все ссылки
         List<ShortUrlEntity> allUrls = urlRepository.findAll();
+
         //получим текущее время
         LocalDateTime now = LocalDateTime.now();
+
         //общее количество ссылок
         int totalUrls = allUrls.size();
+
         //активные ссылки
         int activeUrls = (int) allUrls.stream()
                 .filter(url -> url.getExpiresAt() == null || url.getExpiresAt().isAfter(now))
                 .count();
+
         //просроченные ссылки
         int expiredUrls = totalUrls - activeUrls;
+
         //общее количество кликов
-        int totalClick = allUrls.stream().mapToInt(ShortUrlEntity::getClickCount).sum();
-        //количество кликов за сегодня
-        int todayClicks = allUrls.stream().filter(url -> url.getCreatedAt()
-                        .toLocalDate()
-                        .equals(now.toLocalDate()))
-                .mapToInt(ShortUrlEntity::getClickCount)
+        int totalClick = allUrls.stream()
+                .mapToInt(url -> url.getClickCount() == null ? 0 : url.getClickCount())
                 .sum();
+
+        //количество кликов за сегодня
+        int todayClicks = allUrls.stream()
+                .filter(url -> url.getCreatedAt() != null && url.getCreatedAt()
+                        .toLocalDate().equals(now.toLocalDate()))
+                .mapToInt(url -> url.getClickCount() == null ? 0 : url.getClickCount())
+                .sum();
+
         //среднее количестов кликов на ссылку
-        double averageClickPerUrl = (double) totalClick / totalUrls;
+        double averageClickPerUrl = totalUrls == 0 ? 0.0 : (double) totalClick / totalUrls;
+
+
         //самая популярная ссылка
         ShortUrl mostPopularUrl = allUrls.stream()
-                .max(Comparator.comparingInt(ShortUrlEntity::getClickCount))
+                .max(Comparator.comparingInt(url -> url.getClickCount() == null ? 0 : url.getClickCount()))
                 .map(ShortUtlMapper::mapUrlEntityToDto)
                 .orElse(null);
+
         //количество ссылок, созданных сегодня
         int urlCreatedToday = (int) allUrls.stream().filter(url -> url.getCreatedAt()
                         .toLocalDate()
                         .equals(now.toLocalDate()))
                 .count();
+
         //количество кликов за последнюю неделю
         Map<LocalDate, Long> clicksLastWeek = allUrls.stream()
                 .filter(url -> url.getCreatedAt().toLocalDate().isAfter(now.minusDays(7).toLocalDate()))
                 .collect(Collectors.groupingBy(url -> url.getCreatedAt().toLocalDate(),
-                         Collectors.summingLong(ShortUrlEntity::getClickCount)));
+                        Collectors.summingLong(url -> url.getClickCount() == null ? 0L : url.getClickCount())));
 
         AnalyticsResponse.SummaryAnaliticsResponse response = new AnalyticsResponse.SummaryAnaliticsResponse();
 
         response.setActiveUrls(activeUrls);
-        response.setTodayClicks(totalClick);
+        response.setTodayClicks(todayClicks);
         response.setExpiredUrls(expiredUrls);
         response.setMostPopularUrl(mostPopularUrl);
         response.setClicksLastWeek(clicksLastWeek);
-        response.setTotalClicks(todayClicks);
+        response.setTotalClicks(totalClick);
         response.setTotalUrls(totalUrls);
         response.setAverageClicksPerUrl(averageClickPerUrl);
         response.setUrlsCreatedToday(urlCreatedToday);
