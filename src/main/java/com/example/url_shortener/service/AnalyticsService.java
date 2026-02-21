@@ -107,7 +107,7 @@ public class AnalyticsService {
                 //получаем реферер из каждого клика
                 .map(ClickEntity::getReferer)
                 //отфильтровываем клики без рефереров(лямбда выражение)
-                .filter(referer -> referer != null && referer.isEmpty())
+                .filter(referer -> referer != null && !referer.isEmpty())
                 //раскладвываю клики по реферерам и считаю их значение
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 //беру все пары ключ значение из мапы и преобразую их в поток
@@ -127,7 +127,7 @@ public class AnalyticsService {
         List<AnalyticsResponse.BrowserStatus> topBrowsers = clicks.stream()
                 //получаем браузер из каждого клика
                 .map(ClickEntity::getUserAgent)
-                .filter(browser -> browser != null && browser.isEmpty())
+                .filter(browser -> browser != null && !browser.isEmpty())
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .entrySet().stream()
                 .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
@@ -152,7 +152,11 @@ public class AnalyticsService {
     public AnalyticsResponse.SummaryAnaliticsResponse getAnaliticsSummary() {
 
         //получим все ссылки
-        List<ShortUrlEntity> allUrls = urlRepository.findAll();
+        List<ShortUrl> allUrls = urlRepository.findAll()
+                .stream()
+                .map(ShortUtlMapper::mapUrlEntityToDto)
+                .toList();
+
 
         //получим текущее время
         LocalDateTime now = LocalDateTime.now();
@@ -162,7 +166,7 @@ public class AnalyticsService {
 
         //активные ссылки
         int activeUrls = (int) allUrls.stream()
-                .filter(url -> url.getExpiresAt() == null || url.getExpiresAt().isAfter(now))
+                .filter(url -> url.getExpiresAt().isAfter(now))
                 .count();
 
         //просроченные ссылки
@@ -170,14 +174,14 @@ public class AnalyticsService {
 
         //общее количество кликов
         int totalClick = allUrls.stream()
-                .mapToInt(url -> url.getClickCount() == null ? 0 : url.getClickCount())
+                .mapToInt(ShortUrl::getClickCount)
                 .sum();
 
         //количество кликов за сегодня
         int todayClicks = allUrls.stream()
-                .filter(url -> url.getCreatedAt() != null && url.getCreatedAt()
+                .filter(url -> url.getCreatedAt()
                         .toLocalDate().equals(now.toLocalDate()))
-                .mapToInt(url -> url.getClickCount() == null ? 0 : url.getClickCount())
+                .mapToInt(ShortUrl::getClickCount)
                 .sum();
 
         //среднее количестов кликов на ссылку
@@ -186,8 +190,7 @@ public class AnalyticsService {
 
         //самая популярная ссылка
         ShortUrl mostPopularUrl = allUrls.stream()
-                .max(Comparator.comparingInt(url -> url.getClickCount() == null ? 0 : url.getClickCount()))
-                .map(ShortUtlMapper::mapUrlEntityToDto)
+                .max(Comparator.comparingInt(ShortUrl::getClickCount))
                 .orElse(null);
 
         //количество ссылок, созданных сегодня
@@ -200,7 +203,7 @@ public class AnalyticsService {
         Map<LocalDate, Long> clicksLastWeek = allUrls.stream()
                 .filter(url -> url.getCreatedAt().toLocalDate().isAfter(now.minusDays(7).toLocalDate()))
                 .collect(Collectors.groupingBy(url -> url.getCreatedAt().toLocalDate(),
-                        Collectors.summingLong(url -> url.getClickCount() == null ? 0L : url.getClickCount())));
+                        Collectors.summingLong(ShortUrl::getClickCount)));
 
         AnalyticsResponse.SummaryAnaliticsResponse response = new AnalyticsResponse.SummaryAnaliticsResponse();
 
