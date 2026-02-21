@@ -26,6 +26,6 @@ public class ShortUrl {
     private LocalDateTime expiresAt;
 
     //счётчик переходов по ссылке
-    private Integer clickCount;
+    private Integer clickCount ;
 
 }

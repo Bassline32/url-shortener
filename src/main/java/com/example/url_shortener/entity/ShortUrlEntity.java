@@ -29,10 +29,10 @@ public class ShortUrlEntity {
 
     @Column(name = "expires_at")
     // nullable — может быть бессрочной
-    private LocalDateTime expiresAt;
+    private LocalDateTime expiresAt = LocalDateTime.now().plusDays(20);
 
     @Column(name = "click_count")
     //счётчик переходов по ссылке
-    private Integer clickCount;
+    private Integer clickCount = 0;
 
 }

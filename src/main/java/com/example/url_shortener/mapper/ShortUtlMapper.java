@@ -4,9 +4,6 @@ package com.example.url_shortener.mapper;
 import com.example.url_shortener.entity.ShortUrlEntity;
 import com.example.url_shortener.model.ShortUrl;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
-
 public class ShortUtlMapper {
 
 
@@ -15,12 +12,8 @@ public class ShortUtlMapper {
         shortUrl.setCreatedAt(shortUrlEntity.getCreatedAt());
         shortUrl.setShortCode(shortUrlEntity.getShortCode());
         shortUrl.setOriginalUrl(shortUrlEntity.getOriginalUrl());
-
-        shortUrl.setClickCount(Objects.requireNonNullElse(shortUrlEntity.getClickCount(), 0));
-
-        shortUrl.setExpiresAt(shortUrlEntity.getExpiresAt() == null ?
-                LocalDateTime.now().plusDays(20) : shortUrlEntity.getExpiresAt());
-
+        shortUrl.setClickCount(shortUrlEntity.getClickCount());
+        shortUrl.setExpiresAt(shortUrlEntity.getExpiresAt());
         return shortUrl;
     }
 
