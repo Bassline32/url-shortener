@@ -1,40 +1,47 @@
 package com.example.url_shortener.entity;
 
 
+import com.example.url_shortener.model.ShortUrl;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Data
 @Entity
-@Table(name = "click")
+@Data
+@Table(name = "clicks")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ClickEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id", nullable = false)
     private Long id;
 
-    @Column(name = "shortCode", nullable = false)
-    private String shortCode;
 
-    @Column(name = "timestamp", nullable = false)
-    private LocalDateTime timestamp;
+    //связь ManyToOne с ссылкой
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "short_url_id", nullable = false)
+    private ShortUrlEntity shortUrl;
 
-    @Column(name = "ipAddress", nullable = false)
+    @Column(name = "ip_address", length = 45)
     private String ipAddress;
 
-    @Column(name = "userAgent", nullable = false)
+    @Column(name = "user_agent", length = 500)
     private String userAgent;
 
-    @Column(name = "referer", nullable = false)
+    @Column(length = 2048)
     private String referer;
 
+    @Column(name = "clicked_at", nullable = false)
+    private LocalDateTime clickedAt;
 
-
-
-
-
-
+    @PrePersist
+    protected void onCreate() {
+        clickedAt = LocalDateTime.now();
+    }
 }

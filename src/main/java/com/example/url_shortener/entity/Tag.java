@@ -1,9 +1,12 @@
 package com.example.url_shortener.entity;
 
+import com.example.url_shortener.model.ShortUrl;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "tags")
@@ -27,5 +30,12 @@ public class Tag {
     private LocalDateTime createdAt;
 
     //обратная сторона ManyToMany
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<ShortUrl> urls = new HashSet<>();
 
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }

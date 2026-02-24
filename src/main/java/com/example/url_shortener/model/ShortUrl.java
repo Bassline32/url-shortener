@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Data
 public class ShortUrl {
 
+    private Long id;
 
     @NotNull
     // "abc123"
@@ -26,6 +27,6 @@ public class ShortUrl {
     private LocalDateTime expiresAt;
 
     //счётчик переходов по ссылке
-    private Integer clickCount ;
+    private Integer clickCount;
 
 }

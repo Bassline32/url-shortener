@@ -38,7 +38,7 @@ public class User {
     //связь oneToMany с  ссылками
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
-    private List<ShortUrl> urls = new ArrayList<>();
+    private List<ShortUrlEntity> urls = new ArrayList<>();
 
     //связь oneToMany с папками
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

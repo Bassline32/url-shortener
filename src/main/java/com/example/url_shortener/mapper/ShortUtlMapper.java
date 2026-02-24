@@ -12,8 +12,9 @@ public class ShortUtlMapper {
         shortUrl.setCreatedAt(shortUrlEntity.getCreatedAt());
         shortUrl.setShortCode(shortUrlEntity.getShortCode());
         shortUrl.setOriginalUrl(shortUrlEntity.getOriginalUrl());
-        shortUrl.setClickCount(shortUrlEntity.getClickCount());
+        shortUrl.setClickCount(shortUrlEntity.getClickCount().intValue());
         shortUrl.setExpiresAt(shortUrlEntity.getExpiresAt());
+        shortUrl.setId(shortUrlEntity.getId());
         return shortUrl;
     }
 
