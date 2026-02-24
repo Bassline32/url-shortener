@@ -32,7 +32,7 @@ public class Tag {
     //обратная сторона ManyToMany
     @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
     @Builder.Default
-    private Set<ShortUrl> urls = new HashSet<>();
+    private Set<ShortUrlEntity> urls = new HashSet<>();
 
     @PrePersist
     protected void onCreate() {
