@@ -2,7 +2,7 @@ CREATE TABLE folders
 (
     id         BIGSERIAL PRIMARY KEY,
     name       VARCHAR(100) NOT NULL,
-    user_id    BIGINT       NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    user_id    BIGINT       NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     parent_id  BIGINT REFERENCES folders (id) ON DELETE CASCADE,
     created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

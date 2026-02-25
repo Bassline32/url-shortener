@@ -1,7 +1,7 @@
 CREATE TABLE clicks
 (
     id           BIGSERIAL PRIMARY KEY,
-    short_url_id BIGINT    NOT NULL REFERENCES short_url (id) ON DELETE CASCADE,
+    short_url_id BIGINT    NOT NULL REFERENCES short_urls (id) ON DELETE CASCADE,
     clicked_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ip_address   VARCHAR(45),
     user_agent   VARCHAR(500),

@@ -11,7 +11,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop  # Используем Flyway для миграций
+      ddl-auto: none  # Используем Flyway для миграций
       show-sql: true
       format_sql: true
       dialect: org.hibernate.dialect.PostgreSQLDialect
