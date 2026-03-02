@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.Random;
 @Service
 
-public class ShortCodeGenerator {
+    public class ShortCodeGenerator {
     //генерируем shortCode
     public String shortCode() {
         String symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
