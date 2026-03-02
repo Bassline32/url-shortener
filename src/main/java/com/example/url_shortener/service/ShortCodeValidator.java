@@ -13,7 +13,7 @@ public class ShortCodeValidator {
     private final ShortUrlRepository urlRepository;
 
     public String validate(String customCode) {
-        if (!customCode.matches("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")) {
+        if (!customCode.matches("^[a-zA-Z0-9]+$")) {
             throw new IllegalArgumentException("некорректный формат кастомного кода " + customCode);
         }
             if (urlRepository.existsByShortCode(customCode)) {

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class CreateUrlRequest {
@@ -20,4 +21,6 @@ public class CreateUrlRequest {
     private String customCode;
 
     private LocalDateTime expiresAt;
+
+    private List<String> tags;
 }
