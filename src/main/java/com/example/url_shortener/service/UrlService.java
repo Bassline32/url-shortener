@@ -5,8 +5,11 @@ import com.example.url_shortener.entity.ShortUrlEntity;
 import com.example.url_shortener.exception.ShortCodeAlreadyExistsException;
 import com.example.url_shortener.mapper.ShortUtlMapper;
 import com.example.url_shortener.model.ShortUrl;
+import com.example.url_shortener.repository.ClickRepository;
+import com.example.url_shortener.repository.ShortUrlRepository;
+import com.example.url_shortener.repository.TagRepository;
 import com.example.url_shortener.repository.UrlRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,16 +25,17 @@ import java.util.Random;
 
 
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UrlService {
 
-    private final UrlRepository urlRepository;
+    //private final UrlRepository urlRepository;
+    private final ShortUrlRepository shortUrlRepository;
+    private final ClickRepository clickRepository;
+    private final ShortCodeGenerator shortCodeGenerator;
+    private final TagRepository tagRepository;
 
 
-    @Autowired
-    public UrlService(UrlRepository urlRepository) {
-        this.urlRepository = urlRepository;
-
-    }
 
     //генерация короткого URL
     public ShortUrl createShortUrl(String originalUrl) {
@@ -69,18 +73,7 @@ public class UrlService {
 
     }
 
-    //генерируем shortCode
-    private String shortCode() {
-        String symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        StringBuilder shortCode = new StringBuilder();
-        Random random = new Random();
-        for (int i = 0; i < 6; i++) {
-            shortCode.append(symbols.charAt(random.nextInt(symbols.length())));
-        }
-        return shortCode.toString();
-    }
-
-    //пагинация и сортировка
+    //пагинция и сортировка
     public List<ShortUrl> getUrls(int page, int size, String sortBy, String order) {
         Sort sort = Sort.by(order.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
         //Инструкция по пагиации данных
