@@ -1,15 +1,25 @@
 package com.example.url_shortener.service;
 
 import com.example.url_shortener.dto.CreateUrlRequest;
+import com.example.url_shortener.dto.UrlFilterRequest;
+import com.example.url_shortener.entity.ClickEntity;
 import com.example.url_shortener.entity.ShortUrlEntity;
 import com.example.url_shortener.entity.Tag;
 import com.example.url_shortener.entity.User;
+import com.example.url_shortener.exception.UrlExpiredException;
+import com.example.url_shortener.exception.UrlNotFoundException;
 import com.example.url_shortener.repository.ClickRepository;
 import com.example.url_shortener.repository.ShortUrlRepository;
 import com.example.url_shortener.repository.TagRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 
 @Service
@@ -30,6 +40,12 @@ public class UrlService {
             code = shortCodeGenerator.generate(7);
         } while (shortUrlRepository.existsByShortCode(code));
         return code;
+    }
+
+    //проверка на expired(вспомогательный метод)
+    private boolean isExpired(ShortUrlEntity shortUrlEntity) {
+        return shortUrlEntity.getExpiresAt() != null &&
+                shortUrlEntity.getExpiresAt().isBefore(LocalDateTime.now());
     }
 
     //создание ссылки
@@ -66,5 +82,41 @@ public class UrlService {
         return shortUrlRepository.save(shortUrlEntity);
     }
 
+    //получение и трекинг клика
+    @Transactional
+    public ShortUrlEntity shortUrlEntity(String shorCode, HttpServletRequest request) {
+        ShortUrlEntity shortUrlEntity = shortUrlRepository.findByShortCode(shorCode)
+                .orElseThrow(() -> new UrlNotFoundException(shorCode));
+
+        if (isExpired(shortUrlEntity)) {
+            throw new UrlExpiredException(shorCode);
+        }
+
+        //сохраняем клик
+        ClickEntity click = ClickEntity.builder()
+                .shortUrl(shortUrlEntity)
+                //возвращает IP‑адрес клиента, который сделал HTTP‑запрос.
+                .ipAddress(request.getRemoteAddr())
+                .userAgent(request.getHeader("User-agent"))
+                .referer(request.getHeader("Referer"))
+                .build();
+        clickRepository.save(click);
+
+        // увеличиваем счётчик переходов и сохраняем
+        // обновлённую сущность ссылки в базе
+        // Инкрементируем счётчик
+        shortUrlEntity.incrementClickCount();
+        shortUrlRepository.save(shortUrlEntity);
+        return shortUrlEntity;
+    }
+
+    //поиск с фильтрами
+    //Найди ссылки по фильтрам,
+    // но верни только ту часть результата, которую описывает pageable
+    public Page<ShortUrlEntity> findWithFilter (UrlFilterRequest request, Pageable pageable) {
+    // Используем Specification для динамических фильтров
+        Specification<ShortUrlEntity> spec = Specification.where(null);
+
+    }
 
 }

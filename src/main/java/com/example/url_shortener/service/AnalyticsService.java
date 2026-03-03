@@ -3,7 +3,6 @@ package com.example.url_shortener.service;
 
 import com.example.url_shortener.dto.AnalyticsResponse;
 import com.example.url_shortener.entity.ClickEntity;
-import com.example.url_shortener.entity.ShortUrlEntity;
 import com.example.url_shortener.exception.UrlNotFoundException;
 import com.example.url_shortener.mapper.ShortUtlMapper;
 import com.example.url_shortener.model.ShortUrl;
@@ -77,7 +76,7 @@ public class AnalyticsService {
         ShortUrl url = urlService.getUrlByShortCode(shortcode);
         // проверка на наличие ссылки
         if (url == null) {
-            throw new UrlNotFoundException();
+            throw new UrlNotFoundException(shorCode);
         }
         //получаем список всех кликов по короткой ссылке (делаем список элементов)
         List<ClickEntity> clicks = clickService.getClickCountByShortCode(shortcode);
