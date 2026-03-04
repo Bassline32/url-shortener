@@ -33,4 +33,6 @@ public interface UrlRepository extends JpaRepository<ShortUrlEntity, String> {
 
     //проверка существования короткой ссылки по коду
     boolean existsByShortCode(String shortCode);
+
+
 }

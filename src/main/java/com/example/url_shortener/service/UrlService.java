@@ -113,10 +113,28 @@ public class UrlService {
     //поиск с фильтрами
     //Найди ссылки по фильтрам,
     // но верни только ту часть результата, которую описывает pageable
-    public Page<ShortUrlEntity> findWithFilter (UrlFilterRequest request, Pageable pageable) {
-    // Используем Specification для динамических фильтров
-        Specification<ShortUrlEntity> spec = Specification.where(null);
+    public Page<ShortUrlEntity> findWithFilter(UrlFilterRequest filter, Pageable pageable) {
+        // Используем Specification для динамических фильтров
+        Specification<ShortUrlEntity> spec = Specification.allOf();
 
+        if (filter.getUserId() != null) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("user").get("id"), filter.getUserId()));
+        }
+
+        if (filter.getTag() != null) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.isMember(filter.getTag(), root.get("tags")));
+        }
+
+        if (filter.getActiveOnly() != null && filter.getActiveOnly()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.or(
+                            criteriaBuilder.isNull(root.get("expiresAt")),
+                            criteriaBuilder.greaterThan(root.get("expiresAt"), LocalDateTime.now()))
+            );
+        }
+        return shortUrlRepository.findAll(spec, pageable);
     }
 
 }
