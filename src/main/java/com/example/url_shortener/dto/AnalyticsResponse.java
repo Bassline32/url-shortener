@@ -2,6 +2,7 @@ package com.example.url_shortener.dto;
 
 import com.example.url_shortener.model.ShortUrl;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
