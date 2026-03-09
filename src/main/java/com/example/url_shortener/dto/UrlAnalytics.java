@@ -1,11 +1,10 @@
 package com.example.url_shortener.dto;
 
 
-import lombok.Builder;
+import com.example.url_shortener.dto.response.AnalyticsResponse;import lombok.Builder;
 import lombok.Value;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 

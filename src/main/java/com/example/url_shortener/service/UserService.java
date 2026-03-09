@@ -17,7 +17,7 @@ public class UserService {
 
     //регистрация нового пользователя
     @Transactional
-    public User newUserRegistration(String userName, String email, String passwordHash) {
+    public User newUserRegistration(String userName, String email, String password) {
 
         if (userRepository.existsByUsername(userName)) {
             throw new IllegalArgumentException("Такое имя пользователя уже существует");
@@ -29,7 +29,7 @@ public class UserService {
         User user = User.builder()
                 .username(userName)
                 .email(email)
-                .passwordHash(passwordHash)
+                .passwordHash(password)
                 .build();
 
         return userRepository.save(user);
@@ -54,9 +54,9 @@ public class UserService {
     }
 
     //проверка пароля
-    public User login(String passwordHash, String username) {
+    public User login(String username, String password) {
         User user = findByUserName(username);
-        if (!user.getPasswordHash().equals(passwordHash)) {
+        if (!user.getPasswordHash().equals(password)) {
             throw new RuntimeException("НЕВЕРНЫЙ ПАРОЛЬ");
         }
         return user;

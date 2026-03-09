@@ -1,7 +1,7 @@
 package com.example.url_shortener.service;
 
 
-import com.example.url_shortener.dto.AnalyticsResponse;
+import com.example.url_shortener.dto.response.AnalyticsResponse;
 import com.example.url_shortener.dto.ServiceStats;
 import com.example.url_shortener.dto.UrlAnalytics;
 import com.example.url_shortener.entity.ShortUrlEntity;

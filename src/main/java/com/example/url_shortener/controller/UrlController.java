@@ -2,7 +2,7 @@
 
 package com.example.url_shortener.controller;
 
-import com.example.url_shortener.dto.CreateUrlRequest;
+import com.example.url_shortener.dto.request.CreateUrlRequest;
 import com.example.url_shortener.model.ShortUrl;
 import com.example.url_shortener.service.UrlService;
 import org.springframework.beans.factory.annotation.Autowired;

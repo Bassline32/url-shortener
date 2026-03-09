@@ -1,7 +1,7 @@
 package com.example.url_shortener.service;
 
-import com.example.url_shortener.dto.CreateUrlRequest;
-import com.example.url_shortener.dto.UrlFilterRequest;
+import com.example.url_shortener.dto.request.CreateUrlRequest;
+import com.example.url_shortener.dto.request.UrlFilterRequest;
 import com.example.url_shortener.entity.ClickEntity;
 import com.example.url_shortener.entity.ShortUrlEntity;
 import com.example.url_shortener.entity.Tag;

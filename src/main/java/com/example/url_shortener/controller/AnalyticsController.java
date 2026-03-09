@@ -1,7 +1,7 @@
 package com.example.url_shortener.controller;
 
 
-import com.example.url_shortener.dto.AnalyticsResponse;
+import com.example.url_shortener.dto.response.AnalyticsResponse;
 import com.example.url_shortener.service.AnalyticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
