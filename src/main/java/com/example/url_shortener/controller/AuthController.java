@@ -1,6 +1,7 @@
 package com.example.url_shortener.controller;
 
 
+import com.example.url_shortener.dto.request.LoginRequest;
 import com.example.url_shortener.dto.request.RegisterRequest;
 import com.example.url_shortener.dto.response.UserResponse;
 import com.example.url_shortener.entity.User;
@@ -39,6 +40,17 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/login")
+//используем вайлдКард так как метод вернёт мапу, где могут быть разные типы данных,
+// а не конкретный
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 
+        User user = userService.login(
+                request.getUsername(),
+                request.getPassword()
+        );
+
+        return ResponseEntity.ok(java.util.Map.of("userId", user.getId()));
+    }
 
 }
