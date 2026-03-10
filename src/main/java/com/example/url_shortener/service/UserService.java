@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -64,9 +63,9 @@ public class UserService {
 
     //получение текущего пользователя
     public User getCurrentUser() {
-return userRepository.findAll().stream()
-        .findFirst()
-        .orElseThrow(() -> new RuntimeException("В БАЗЕ ДАННЫХ НЕТ ПОЛЬЗОВАТЕЛЕЙ"));
+        return userRepository.findAll().stream()
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("В БАЗЕ ДАННЫХ НЕТ ПОЛЬЗОВАТЕЛЕЙ"));
     }
 
 
