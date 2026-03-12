@@ -2,6 +2,7 @@ package com.example.url_shortener.service;
 
 import com.example.url_shortener.dto.request.CreateUrlRequest;
 import com.example.url_shortener.dto.request.UrlFilterRequest;
+import com.example.url_shortener.dto.response.UserStatsResponse;
 import com.example.url_shortener.entity.ClickEntity;
 import com.example.url_shortener.entity.ShortUrlEntity;
 import com.example.url_shortener.entity.Tag;
@@ -136,4 +137,21 @@ public class UrlService {
         }
         return shortUrlRepository.findAll(spec, pageable);
     }
+
+    public Page<ShortUrlEntity> getUrlsForUser(User user, int page, int size) {
+        Pageable pageable = Pageable.ofSize(size).withPage(page);
+        return shortUrlRepository.findByUser(user, pageable);
+    }
+
+    public UserStatsResponse getStatsForUser(User user) {
+        long totalUrls = shortUrlRepository.countByUser(user);
+        int activeByDate = shortUrlRepository.countByUserAndExpiresAtAfter(user, LocalDateTime.now());
+        int activeWithoutExpry = shortUrlRepository.countByUserAndExpiresAtIsNull(user);
+        long activeUrls = activeByDate + activeWithoutExpry;
+        long totalClicks = user.getUrls().stream().mapToLong(
+                        ShortUrlEntity::getClickCount)
+                .sum();
+        return new UserStatsResponse(totalClicks, totalUrls, activeUrls);
+    }
+
 }

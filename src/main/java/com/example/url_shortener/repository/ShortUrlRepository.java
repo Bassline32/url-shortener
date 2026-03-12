@@ -1,6 +1,7 @@
 package com.example.url_shortener.repository;
 
 import com.example.url_shortener.entity.ShortUrlEntity;
+import com.example.url_shortener.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -60,4 +61,13 @@ public interface ShortUrlRepository extends JpaRepository<ShortUrlEntity, Long>,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
+
+    Page<ShortUrlEntity> findByUser(User user, Pageable pageable);
+
+    int countByUser (User user);
+
+    int countByUserAndExpiresAtAfter (User user, LocalDateTime now);
+
+    //если ссылка бессрочная, то она тоже активна
+    int countByUserAndExpiresAtIsNull(User user);
 }
