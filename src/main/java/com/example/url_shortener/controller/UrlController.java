@@ -3,9 +3,13 @@
 package com.example.url_shortener.controller;
 
 import com.example.url_shortener.dto.request.CreateUrlRequest;
+import com.example.url_shortener.dto.request.UpdateTagRequest;
+import com.example.url_shortener.entity.ShortUrlEntity;
+import com.example.url_shortener.entity.User;
 import com.example.url_shortener.model.ShortUrl;
 import com.example.url_shortener.service.UrlService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.url_shortener.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,14 +18,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/vi/urls")
+@RequiredArgsConstructor
 public class UrlController {
 
     private final UrlService urlService;
-
-    @Autowired
-    public UrlController(UrlService urlService) {
-        this.urlService = urlService;
-    }
+    private final UserService userService;
 
     //удаляем ссылку
     @DeleteMapping("/{shortCode}")
@@ -57,7 +58,7 @@ public class UrlController {
 
     //пагинация и сортировка
     @GetMapping("/filtred")
-    public ResponseEntity<List<ShortUrl>> getUrls(
+    public ResponseEntity<List<ShortUrlEntity>> getUrls(
             //праметр метода номер страницы
             @RequestParam(defaultValue = "0") int page,
             //количество элементов, которые нужно вернуть на странице
@@ -68,7 +69,7 @@ public class UrlController {
             // По умолчанию, если параметр не указан в запросе, будет использоваться desc.
             @RequestParam(defaultValue = "desk") String order
     ) {
-        List<ShortUrl> urls = urlService.getUrls(page, size, sortBy, order);
+        List<ShortUrlEntity> urls = urlService.getUrls(page, size, sortBy, order);
         return ResponseEntity.ok(urls);
     }
 
@@ -113,4 +114,30 @@ public class UrlController {
             return ResponseEntity.badRequest().body("Неверный формат");
         }
     }
+
+    @PutMapping("/{shortCode}/tags")
+    public ResponseEntity<?> updateTags(@PathVariable String shortCode,
+                                        @RequestBody UpdateTagRequest request) {
+
+        User user = userService.getCurrentUser();
+        ShortUrlEntity updated = urlService.updateTags(user, shortCode, request.tags());
+        return ResponseEntity.ok(updated);
+
+    }
+
+    @GetMapping("/promoTag")
+    public ResponseEntity<?> getUrlsWereEqualsPromoTag(
+            @RequestParam(required = false) String tag,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        User user = userService.getCurrentUser();
+
+        if (tag != null) {
+            return ResponseEntity.ok(urlService.getUrlByTag(user, tag));
+        }
+        return ResponseEntity.ok(urlService.getUrlsForUser(user, page, size));
+    }
+
+
 }
