@@ -2,6 +2,7 @@ package com.example.url_shortener.service;
 
 import com.example.url_shortener.dto.request.CreateFolderRequest;
 import com.example.url_shortener.dto.response.CreateFolderResponse;
+import com.example.url_shortener.dto.response.FolderTreeResponse;
 import com.example.url_shortener.entity.Folder;
 import com.example.url_shortener.entity.User;
 import com.example.url_shortener.exception.UserNotFoundException;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -66,5 +68,44 @@ public class FolderService {
                 parentId
         );
     }
+
+    public List<FolderTreeResponse> getTreeResponse(Long userId) {
+
+        //проверим, что пользователь существует
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException("Такой пользователь не найден"));
+
+        //получаем все корневые папки пользователя
+        //найти все корневые папки это парент айди нулл
+        //так как у них  нет родительской папки, а если парент айди имеет значение => папка дочерняя
+        List<Folder> root = folderRepository.findByUserIdAndParentIsNull(userId);
+
+        //мап каждой корневой папки  в дерево
+        return root.stream()
+                .map(this::mapToTree)
+                .toList();
+    }
+
+    //тут преобразуем Folder -> FolderTreeResponse
+    private FolderTreeResponse mapToTree(Folder folder) {
+        List<FolderTreeResponse> children = folder.getChildren().stream()
+                .map(this::mapToTree)
+                .toList();
+
+        //проверка на null parentId
+        Long parentId = Optional.ofNullable(folder.getParent())
+                .map(Folder::getId)
+                .orElse(null);
+
+
+        return new FolderTreeResponse(
+                folder.getId(),
+                folder.getName(),
+                parentId,
+                children
+        );
+
+    }
+
 
 }
