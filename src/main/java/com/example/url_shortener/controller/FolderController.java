@@ -37,9 +37,12 @@ public class FolderController {
         List<FolderTreeResponse> tree = folderService.getTreeResponse(userId);
 
         return ResponseEntity.ok(tree);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<> какой-то метод (@PathVariable "id" Long id) {
 
 
     }
-
 
 }

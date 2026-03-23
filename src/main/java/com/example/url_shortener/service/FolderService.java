@@ -2,6 +2,7 @@ package com.example.url_shortener.service;
 
 import com.example.url_shortener.dto.request.CreateFolderRequest;
 import com.example.url_shortener.dto.response.CreateFolderResponse;
+import com.example.url_shortener.dto.response.FolderDetailedResponse;
 import com.example.url_shortener.dto.response.FolderTreeResponse;
 import com.example.url_shortener.entity.Folder;
 import com.example.url_shortener.entity.User;
@@ -105,6 +106,19 @@ public class FolderService {
                 children
         );
 
+    }
+
+    public FolderDetailedResponse getFolderWithContent(Long userId, Long folderId) {
+        //снова проверка на существование пользователя
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException("Такой пользователь не найден"));
+
+        //ищем папку по id и юзеру
+        Folder folder = folderRepository.findByIdAndUserId(userId, folderId)
+                .orElseThrow(() -> new UserNotFoundException("Такого юзера не найдено"));
+
+        //маппим в ДТО с вложенными папками и ссылками
+        return mapToDetails(folder);
     }
 
 
