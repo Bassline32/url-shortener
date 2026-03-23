@@ -80,7 +80,7 @@ public class UrlService {
     }
 
     //пагинция и сортировка
-    public List<ShortUrlEntity> getUrls(int page, int size, String sortBy, String order) {
+    public List<ShortUrl> getUrls(int page, int size, String sortBy, String order) {
         Sort sort = Sort.by(order.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
         //Инструкция по пагиации данных
         Pageable pageable = PageRequest.of(page, size, sort);
