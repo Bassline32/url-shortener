@@ -4,6 +4,7 @@ import com.example.url_shortener.dto.request.CreateFolderRequest;
 import com.example.url_shortener.dto.response.CreateFolderResponse;
 import com.example.url_shortener.dto.response.FolderDetailedResponse;
 import com.example.url_shortener.dto.response.FolderTreeResponse;
+import com.example.url_shortener.dto.response.LinkResponse;
 import com.example.url_shortener.entity.Folder;
 import com.example.url_shortener.entity.User;
 import com.example.url_shortener.exception.UserNotFoundException;
@@ -70,6 +71,7 @@ public class FolderService {
         );
     }
 
+    @Transactional
     public List<FolderTreeResponse> getTreeResponse(Long userId) {
 
         //проверим, что пользователь существует
@@ -108,17 +110,49 @@ public class FolderService {
 
     }
 
+    @Transactional
     public FolderDetailedResponse getFolderWithContent(Long userId, Long folderId) {
         //снова проверка на существование пользователя
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserNotFoundException("Такой пользователь не найден"));
 
         //ищем папку по id и юзеру
-        Folder folder = folderRepository.findByIdAndUserId(userId, folderId)
+        Folder folder = folderRepository.findByIdAndUserId(folderId, userId)
                 .orElseThrow(() -> new UserNotFoundException("Такого юзера не найдено"));
 
         //маппим в ДТО с вложенными папками и ссылками
         return mapToDetails(folder);
+    }
+
+    private Long getParentId(Folder folder) {
+        return folder.getParent() != null ? folder.getParent().getId() : null;
+    }
+
+
+    private FolderDetailedResponse mapToDetails(Folder folder) {
+        //children
+        List<FolderDetailedResponse> children = folder.getChildren().stream()
+                .map(this::mapToDetails)
+                .toList();
+
+        //ccылки (тут links  равнозночно urls)
+        List<LinkResponse> links = folder.getUrls().stream()
+                .map(shortUrl -> new LinkResponse(
+                                shortUrl.getId(),
+                                shortUrl.getOriginalUrl(), //url
+                                shortUrl.getShortCode()  //name
+                        )
+                )
+                .toList();
+
+
+        return new FolderDetailedResponse(
+                folder.getId(),
+                folder.getName(),
+                getParentId(folder),
+                children,
+                links
+        );
     }
 
 

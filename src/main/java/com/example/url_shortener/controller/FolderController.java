@@ -2,6 +2,7 @@ package com.example.url_shortener.controller;
 
 import com.example.url_shortener.dto.request.CreateFolderRequest;
 import com.example.url_shortener.dto.response.CreateFolderResponse;
+import com.example.url_shortener.dto.response.FolderDetailedResponse;
 import com.example.url_shortener.dto.response.FolderTreeResponse;
 import com.example.url_shortener.repository.FolderRepository;
 import com.example.url_shortener.service.FolderService;
@@ -40,9 +41,14 @@ public class FolderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<> какой-то метод (@PathVariable "id" Long id) {
+    public ResponseEntity<FolderDetailedResponse> getFolder(
+            @PathVariable Long id) {
 
+        Long userId = 1L;
 
+        FolderDetailedResponse response = folderService.getFolderWithContent(userId, id);
+
+        return ResponseEntity.ok(response);
     }
 
 }

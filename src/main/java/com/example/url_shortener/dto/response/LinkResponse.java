@@ -8,6 +8,6 @@ import lombok.Value;
 //дто ошка для ссылки
 public class LinkResponse {
     Long id;
-    String name; //название ссылки
-    String url; //сама ссылка
+    String name; //название ссылки (shortCode в шорт урл энтити)
+    String url; //сама ссылка (jriginalUrl)
 }
