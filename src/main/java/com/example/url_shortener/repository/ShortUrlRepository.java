@@ -70,4 +70,6 @@ public interface ShortUrlRepository extends JpaRepository<ShortUrlEntity, Long>,
 
     //если ссылка бессрочная, то она тоже активна
     int countByUserAndExpiresAtIsNull(User user);
+
+    Optional<ShortUrlEntity> findByShortCodeAndUserId (String shortcode, Long userId);
 }

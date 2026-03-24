@@ -51,4 +51,7 @@ public class FolderController {
         return ResponseEntity.ok(response);
     }
 
+    //перемещаем ссылку в другую папку
+    @PutMapping
+
 }

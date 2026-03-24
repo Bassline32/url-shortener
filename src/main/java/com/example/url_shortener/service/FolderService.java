@@ -6,9 +6,12 @@ import com.example.url_shortener.dto.response.FolderDetailedResponse;
 import com.example.url_shortener.dto.response.FolderTreeResponse;
 import com.example.url_shortener.dto.response.LinkResponse;
 import com.example.url_shortener.entity.Folder;
+import com.example.url_shortener.entity.ShortUrlEntity;
 import com.example.url_shortener.entity.User;
+import com.example.url_shortener.exception.UrlNotFoundException;
 import com.example.url_shortener.exception.UserNotFoundException;
 import com.example.url_shortener.repository.FolderRepository;
+import com.example.url_shortener.repository.ShortUrlRepository;
 import com.example.url_shortener.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,7 @@ public class FolderService {
 
     private final FolderRepository folderRepository;
     private final UserRepository userRepository;
+    private final ShortUrlRepository urlRepository;
 
     @Transactional
     public CreateFolderResponse createFolder(String userName, CreateFolderRequest request) {
@@ -155,5 +159,30 @@ public class FolderService {
         );
     }
 
+    @Transactional
+    public void moveUrlToFolder( String shortCode, Long folderId) {
+
+        Long userId = 1L;
+
+        //проверяем наличие пользователя
+        userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException("Такой пользователь не найден"));
+
+        //находим ссылку
+        ShortUrlEntity url = urlRepository.findByShortCodeAndUserId(shortCode, userId)
+                .orElseThrow(() -> new UrlNotFoundException("Такой папки нет"));
+
+        //находим папку
+        Folder folder =  folderRepository.findByShortCodeAndUserId
+
+                //TODO доделать  сервис и контроллер. Также добавить метод  в FolderRepository
+
+        //проверим, что  ссылка уже не находится в этой папке
+        if (url.getFolder() != null && url.getFolder().getId().equals(folderId)) {
+            throw new IllegalStateException("Ссылка уже находится в этой папке");
+        }
+
+
+    }
 
 }
