@@ -72,4 +72,8 @@ public interface ShortUrlRepository extends JpaRepository<ShortUrlEntity, Long>,
     int countByUserAndExpiresAtIsNull(User user);
 
     Optional<ShortUrlEntity> findByShortCodeAndUserId (String shortcode, Long userId);
+
+    //ищем все ссылки которые лежат в папке
+    List<ShortUrlEntity> findByFolderId(Long folderId);
+
 }

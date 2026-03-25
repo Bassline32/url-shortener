@@ -28,6 +28,7 @@ public class FolderService {
 
     private final FolderRepository folderRepository;
     private final UserRepository userRepository;
+    private final ShortUrlRepository shortUrlRepository;
 
     @Transactional
     public CreateFolderResponse createFolder(String userName, CreateFolderRequest request) {
@@ -158,6 +159,32 @@ public class FolderService {
         );
     }
 
+    @Transactional
+    public void deleteFolder(Long folderId) {
+
+        Long userId = 1L;
+
+        //снова проверка на существование пользователя
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException("Такой пользователь не найден"));
+
+        //находим папку пользователя
+        Folder folder = folderRepository.findByIdAndUserId(folderId, userId)
+                .orElseThrow(() -> new RuntimeException("Такой папки нет или она не принадлежит пользователю"));
+
+        //поиск всех ссылок в этой папке
+        List<ShortUrlEntity> urls = shortUrlRepository.findByFolderId(folderId);
+
+        //убиоаем у всех ссылок primary key
+        urls.forEach(url -> url.setFolder(null));
+
+        //сохраняем изменения по ссылкам с удалённым первичным ключом
+         shortUrlRepository.saveAll(urls);
+
+         //удаляем папку
+        folderRepository.delete(folder);
+
+    }
 
 
 }
