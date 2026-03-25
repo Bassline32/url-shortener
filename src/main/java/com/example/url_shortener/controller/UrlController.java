@@ -3,6 +3,7 @@
 package com.example.url_shortener.controller;
 
 import com.example.url_shortener.dto.request.CreateUrlRequest;
+import com.example.url_shortener.dto.request.MoveUrlRequest;
 import com.example.url_shortener.dto.request.UpdateTagRequest;
 import com.example.url_shortener.entity.ShortUrlEntity;
 import com.example.url_shortener.entity.User;
@@ -137,6 +138,15 @@ public class UrlController {
             return ResponseEntity.ok(urlService.getUrlByTag(user, tag));
         }
         return ResponseEntity.ok(urlService.getUrlsForUser(user, page, size));
+    }
+
+    @PutMapping("/{shortCode}/folder")
+    public ResponseEntity<String> moveUrlToFolder(
+            @PathVariable String shortCode,
+            @RequestBody MoveUrlRequest request
+    ) {
+        urlService.moveUrlToFolder(shortCode, request.folderId());
+        return ResponseEntity.ok("Cсылка перемещена в папку");
     }
 
 

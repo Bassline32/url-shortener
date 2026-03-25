@@ -3,18 +3,13 @@ package com.example.url_shortener.service;
 import com.example.url_shortener.dto.request.CreateUrlRequest;
 import com.example.url_shortener.dto.request.UrlFilterRequest;
 import com.example.url_shortener.dto.response.UserStatsResponse;
-import com.example.url_shortener.entity.ClickEntity;
-import com.example.url_shortener.entity.ShortUrlEntity;
-import com.example.url_shortener.entity.Tag;
-import com.example.url_shortener.entity.User;
+import com.example.url_shortener.entity.*;
 import com.example.url_shortener.exception.UrlExpiredException;
 import com.example.url_shortener.exception.UrlNotFoundException;
+import com.example.url_shortener.exception.UserNotFoundException;
 import com.example.url_shortener.mapper.ShortUtlMapper;
 import com.example.url_shortener.model.ShortUrl;
-import com.example.url_shortener.repository.ClickRepository;
-import com.example.url_shortener.repository.ShortUrlRepository;
-import com.example.url_shortener.repository.TagRepository;
-import com.example.url_shortener.repository.UrlRepository;
+import com.example.url_shortener.repository.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -42,6 +37,8 @@ public class UrlService {
     private final TagRepository tagRepository;
     private final ShortCodeValidator codeValidator;
     private final UrlRepository urlRepository;
+    private final FolderRepository folderRepository;
+    private final UserRepository userRepository;
 
     //генерируем уникальный код(вспомогательный метод)
     private String generateUniqueCode() {
@@ -269,5 +266,35 @@ public class UrlService {
         return shortUrlRepository.save(url);
     }
 
+    @Transactional
+    public void moveUrlToFolder(String shortCode, Long folderId) {
+
+        Long userId = 1L;
+
+        //проверяем наличие пользователя
+        userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException("Такой пользователь не найден"));
+
+        //находим ссылку
+        ShortUrlEntity url = shortUrlRepository.findByShortCodeAndUserId(shortCode, userId)
+                .orElseThrow(() -> new UrlNotFoundException("Такой папки нет"));
+
+        //находим папку
+        Folder folder = folderRepository.findByIdAndUserId(folderId, userId)
+                .orElseThrow(() -> new RuntimeException("Такой папки  не найдено"));
+
+        //проверим, что  ссылка уже не находится в этой папке
+        if (url.getFolder() != null && url.getFolder().getId().equals(folderId)) {
+            throw new RuntimeException("Ссылка уже находится в этой папке");
+        }
+
+        //перемещаем ссылку
+        url.setFolder(folder);
+
+        //сохраняем ссылку
+
+        shortUrlRepository.save(url);
+
+    }
 
 }
