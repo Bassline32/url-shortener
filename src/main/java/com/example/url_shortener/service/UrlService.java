@@ -1,5 +1,6 @@
 package com.example.url_shortener.service;
 
+import com.example.url_shortener.dto.request.CreateShortUrlRequest;
 import com.example.url_shortener.dto.request.CreateUrlRequest;
 import com.example.url_shortener.dto.request.UrlFilterRequest;
 import com.example.url_shortener.dto.response.UserStatsResponse;
@@ -131,22 +132,32 @@ public class UrlService {
     //создание ссылки
     @Transactional
     //определяем shortCode
-    public ShortUrlEntity createShortUrl(CreateUrlRequest request, User user) {
-        String shortCode = request.getCustomCode() != null
-                ? codeValidator.validate(request.getCustomCode())
+    public ShortUrlEntity createShortUrl(CreateShortUrlRequest request, User user) {
+
+        //определяем ShortCode
+        String shortCode = request.customCode() != null
+                ? codeValidator.validate(request.customCode())
                 : generateUniqueCode();
+
+        //находим папку если передам folderId
+        Folder folder = null;
+        if (request.folderId() != null) {
+            folder = folderRepository.findById(request.folderId())
+                    .orElseThrow(() -> new IllegalArgumentException("папка не найдена"));
+        }
+
 
         //сорздаём сущность
         ShortUrlEntity shortUrlEntity = ShortUrlEntity.builder()
                 .shortCode(shortCode)
-                .originalUrl(request.getOriginalUrl())
+                .originalUrl(request.originalUrl())
                 .user(user)
-                .expiresAt(request.getExpiresAt())
+                .expiresAt(request.expiresAt())
                 .build();
 
         //добавляем теги, если есть
-        if (request.getTags() != null) {
-            request.getTags()
+        if (request.tags() != null) {
+            request.tags()
                     .forEach(tagName ->
                             {
                                 Tag tag = tagRepository.findByName(tagName)
@@ -161,6 +172,7 @@ public class UrlService {
 
         return shortUrlRepository.save(shortUrlEntity);
     }
+
 
     //получение и трекинг клика
     @Transactional

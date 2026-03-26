@@ -56,6 +56,7 @@ public class FolderController {
             @PathVariable Long id
     ) {
         folderService.deleteFolder(id);
+
         return ResponseEntity.noContent().build();
     }
 

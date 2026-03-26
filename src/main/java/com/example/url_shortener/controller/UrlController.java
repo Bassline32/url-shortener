@@ -2,12 +2,14 @@
 
 package com.example.url_shortener.controller;
 
-import com.example.url_shortener.dto.request.CreateUrlRequest;
-import com.example.url_shortener.dto.request.MoveUrlRequest;
-import com.example.url_shortener.dto.request.UpdateTagRequest;
+import com.example.url_shortener.dto.request.*;
+import com.example.url_shortener.dto.response.CreateShortUrlResponse;
 import com.example.url_shortener.entity.ShortUrlEntity;
 import com.example.url_shortener.entity.User;
+import com.example.url_shortener.exception.UserNotFoundException;
+import com.example.url_shortener.mapper.ShortUtlMapper;
 import com.example.url_shortener.model.ShortUrl;
+import com.example.url_shortener.repository.UserRepository;
 import com.example.url_shortener.service.UrlService;
 import com.example.url_shortener.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class UrlController {
 
     private final UrlService urlService;
     private final UserService userService;
+    private final UserRepository userRepository;
 
     //удаляем ссылку
     @DeleteMapping("/{shortCode}")
@@ -49,13 +52,21 @@ public class UrlController {
         return ResponseEntity.ok(url);
     }
 
+
     //создаём короткую ссылку
     @PostMapping("/shorten")
-    public ResponseEntity<?> createShortUrl(@RequestParam("originalUrl") String originalUrl) {
-        ShortUrl shortUrl = urlService.createShortUrl(originalUrl);
-        URI location = URI.create("/api/vi/urls" + shortUrl.getShortCode());
-        return ResponseEntity.created(location).body(shortUrl);
+    public ResponseEntity<CreateShortUrlResponse> createShortUrl(
+            @RequestBody CreateShortUrlRequest request,
+            @RequestBody RegisterRequest register
+    ) {
+        User user = userRepository.findByUsername(register.getUsername())
+                .orElseThrow(() -> new UserNotFoundException("такого пользователя не существует"));
+
+        ShortUrlEntity entity = urlService.createShortUrl(request, user);
+
+        return ResponseEntity.ok(ShortUtlMapper.response(entity));
     }
+
 
     //пагинация и сортировка
     @GetMapping("/filtred")
