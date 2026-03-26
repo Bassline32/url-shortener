@@ -56,10 +56,9 @@ public class UrlController {
     //создаём короткую ссылку
     @PostMapping("/shorten")
     public ResponseEntity<CreateShortUrlResponse> createShortUrl(
-            @RequestBody CreateShortUrlRequest request,
-            @RequestBody RegisterRequest register
+            @RequestBody CreateShortUrlRequest request
     ) {
-        User user = userRepository.findByUsername(register.getUsername())
+        User user = userRepository.findByUserId(1L)
                 .orElseThrow(() -> new UserNotFoundException("такого пользователя не существует"));
 
         ShortUrlEntity entity = urlService.createShortUrl(request, user);
