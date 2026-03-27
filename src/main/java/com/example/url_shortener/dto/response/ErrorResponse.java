@@ -1,18 +1,16 @@
 package com.example.url_shortener.dto.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Value;
 
-@Value
-
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ErrorResponse {
-
     String message;
-
-    public ErrorResponse(String message) {
-        this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
 }
+//  public String getMessage() {
+//   return message;
+// }

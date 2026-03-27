@@ -79,7 +79,7 @@ public class FolderService {
     public List<FolderTreeResponse> getTreeResponse(Long userId) {
 
         //проверим, что пользователь существует
-        User user = userRepository.findByUserId(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Такой пользователь не найден"));
 
         //получаем все корневые папки пользователя
@@ -117,7 +117,7 @@ public class FolderService {
     @Transactional
     public FolderDetailedResponse getFolderWithContent(Long userId, Long folderId) {
         //снова проверка на существование пользователя
-        User user = userRepository.findByUserId(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Такой пользователь не найден"));
 
         //ищем папку по id и юзеру
@@ -165,7 +165,7 @@ public class FolderService {
         Long userId = 1L;
 
         //снова проверка на существование пользователя
-        User user = userRepository.findByUserId(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Такой пользователь не найден"));
 
         //находим папку пользователя

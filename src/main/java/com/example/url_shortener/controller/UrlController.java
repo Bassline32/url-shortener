@@ -58,7 +58,7 @@ public class UrlController {
     public ResponseEntity<CreateShortUrlResponse> createShortUrl(
             @RequestBody CreateShortUrlRequest request
     ) {
-        User user = userRepository.findByUserId(1L)
+        User user = userRepository.findById(1L)
                 .orElseThrow(() -> new UserNotFoundException("такого пользователя не существует"));
 
         ShortUrlEntity entity = urlService.createShortUrl(request, user);
@@ -69,7 +69,7 @@ public class UrlController {
 
     //пагинация и сортировка
     @GetMapping("/filtred")
-    public ResponseEntity<List<ShortUrlEntity>> getUrls(
+    public ResponseEntity<List<ShortUrl>> getUrls(
             //праметр метода номер страницы
             @RequestParam(defaultValue = "0") int page,
             //количество элементов, которые нужно вернуть на странице
@@ -80,7 +80,7 @@ public class UrlController {
             // По умолчанию, если параметр не указан в запросе, будет использоваться desc.
             @RequestParam(defaultValue = "desk") String order
     ) {
-        List<ShortUrlEntity> urls = urlService.getUrls(page, size, sortBy, order);
+        List<ShortUrl> urls = urlService.getUrls(page, size, sortBy, order);
         return ResponseEntity.ok(urls);
     }
 
@@ -107,8 +107,12 @@ public class UrlController {
 
     //возвращаем список массово созданных ссылок
     @PostMapping("/batch")
-    public ResponseEntity<List<ShortUrl>> createUrls(@RequestBody List<CreateUrlRequest> requests) {
-        List<ShortUrl> urls = urlService.createUrls(requests);
+    public ResponseEntity<List<ShortUrl>> createUrls(@RequestBody List<CreateShortUrlRequest> requests) {
+
+        User user = userRepository.findById(1L)
+                .orElseThrow(() -> new UserNotFoundException("Такой пользователь не найден"));
+
+        List<ShortUrl> urls = urlService.createUrls(requests, user);
         return ResponseEntity.ok(urls);
     }
 

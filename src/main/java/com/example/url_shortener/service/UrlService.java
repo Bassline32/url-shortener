@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -127,6 +128,15 @@ public class UrlService {
                     .append(url.getClickCount()).append("\n");
         }
         return csv.toString();
+    }
+
+    @Transactional
+    //массовое создание ссылкок
+    public List<ShortUrl> createUrls(List<CreateShortUrlRequest> requests, User user) {
+        return requests.stream()
+                .map(request -> createShortUrl(request, user))
+                .map(ShortUtlMapper::mapUrlEntityToDto)
+                .toList();
     }
 
     //создание ссылки
@@ -284,7 +294,7 @@ public class UrlService {
         Long userId = 1L;
 
         //проверяем наличие пользователя
-        userRepository.findByUserId(userId)
+        userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Такой пользователь не найден"));
 
         //находим ссылку
