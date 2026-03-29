@@ -1,4 +1,4 @@
-/*
+
 package com.example.url_shortener.controller;
 
 
@@ -39,4 +39,4 @@ public class AnalyticsController {
         return analyticsService.getAnaliticsSummary();
     }
 }
-*/
+
