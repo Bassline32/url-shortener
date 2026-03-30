@@ -12,7 +12,9 @@ import com.example.url_shortener.model.ShortUrl;
 import com.example.url_shortener.repository.UserRepository;
 import com.example.url_shortener.service.UrlService;
 import com.example.url_shortener.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +22,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/vi/urls")
+@RequestMapping("/api/v1/urls")
 @RequiredArgsConstructor
 public class UrlController {
 
@@ -56,7 +58,7 @@ public class UrlController {
     //создаём короткую ссылку
     @PostMapping("/shorten")
     public ResponseEntity<CreateShortUrlResponse> createShortUrl(
-            @RequestBody CreateShortUrlRequest request
+         @RequestBody CreateShortUrlRequest request
     ) {
         User user = userRepository.findById(1L)
                 .orElseThrow(() -> new UserNotFoundException("такого пользователя не существует"));

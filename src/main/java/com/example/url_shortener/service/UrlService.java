@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -164,6 +165,8 @@ public class UrlService {
                 .originalUrl(request.originalUrl())
                 .user(user)
                 .expiresAt(request.expiresAt())
+                .folder(folder)
+                .tags(new HashSet<>())
                 .build();
 
         //добавляем теги, если есть
@@ -230,7 +233,6 @@ public class UrlService {
         );
         return shortUrlRepository.findAll(spec, pageable);
     }
-
 
 
     public Page<ShortUrlEntity> getUrlsForUser(User user, int page, int size) {
