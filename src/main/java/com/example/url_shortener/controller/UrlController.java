@@ -55,7 +55,7 @@ public class UrlController {
     }
 
 
-    //создаём короткую ссылку
+    //создаём одну короткую ссылку
     @PostMapping("/shorten")
     public ResponseEntity<CreateShortUrlResponse> createShortUrl(
          @RequestBody CreateShortUrlRequest request
@@ -107,7 +107,7 @@ public class UrlController {
         return ResponseEntity.ok(urls);
     }
 
-    //возвращаем список массово созданных ссылок
+    //создаёт несколько коротких ссылок за один запрос
     @PostMapping("/batch")
     public ResponseEntity<List<ShortUrl>> createUrls(@RequestBody List<CreateShortUrlRequest> requests) {
 
