@@ -11,6 +11,7 @@ import com.example.url_shortener.exception.UserNotFoundException;
 import com.example.url_shortener.mapper.ShortUtlMapper;
 import com.example.url_shortener.model.ShortUrl;
 import com.example.url_shortener.repository.*;
+import com.example.url_shortener.specification.UrlSpecifications;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -217,27 +218,20 @@ public class UrlService {
     // но верни только ту часть результата, которую описывает pageable
     public Page<ShortUrlEntity> findWithFilter(UrlFilterRequest filter, Pageable pageable) {
         // Используем Specification для динамических фильтров
-        Specification<ShortUrlEntity> spec = Specification.allOf();
+        Specification<ShortUrlEntity> spec =
+                (root, query, criteriaBuilder)
+                        -> criteriaBuilder.conjunction();
 
-        if (filter.getUserId() != null) {
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("user").get("id"), filter.getUserId()));
-        }
-
-        if (filter.getTag() != null) {
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.isMember(filter.getTag(), root.get("tags")));
-        }
-
-        if (filter.getActiveOnly() != null && filter.getActiveOnly()) {
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.or(
-                            criteriaBuilder.isNull(root.get("expiresAt")),
-                            criteriaBuilder.greaterThan(root.get("expiresAt"), LocalDateTime.now()))
-            );
-        }
+        spec = spec.and(UrlSpecifications.belongsToUser(filter.getUserId()));
+        spec = spec.and(UrlSpecifications.hasTag(filter.getTag()));
+        spec = spec.and(filter.getActiveOnly() != null && filter.getActiveOnly()
+                ? UrlSpecifications.isActive()
+                : null
+        );
         return shortUrlRepository.findAll(spec, pageable);
     }
+
+
 
     public Page<ShortUrlEntity> getUrlsForUser(User user, int page, int size) {
         Pageable pageable = Pageable.ofSize(size).withPage(page);
