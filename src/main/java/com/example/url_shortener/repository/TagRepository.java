@@ -1,5 +1,6 @@
 package com.example.url_shortener.repository;
 
+import com.example.url_shortener.entity.ShortUrlEntity;
 import com.example.url_shortener.entity.Tag;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

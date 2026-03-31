@@ -97,38 +97,45 @@ public class AnalyticsService {
                 .build();
     }
 
+
     // Возвращаю общую статистику по одной ссылке
 
     public AnalyticsResponse.ShortUrlStatus getShortUrlStatus(String shortCode) {
-        // получаем ссылку по короткому коду и проверяем есть ли она
-        ShortUrl url = urlService.getUrlByShortCode(shortCode);
-        if (url == null) {
-            throw new RuntimeException("Link not Found");
-        }
-        // получаем список кликов по ссылке
-        List<com.example.url_shortener.entity.ClickEntity> clicks = clickRepository.findByShortCode(shortCode);
-        // подчёт общего количества кликов
+        //находим сущность ссылки
+        ShortUrlEntity urlEntity = urlRepository.findByShortCode(shortCode)
+                .orElseThrow(() -> new UrlNotFoundException("Такая ссылка не найлена"));
+
+        //получаем клики по ссылке
+        List<ClickEntity> clicks = clickRepository.findByShortUrl(urlEntity);
+
+        //общее количество кликов
         long totalClicks = clicks.size();
-        //считаем уникальные IP
+
+        //уникальные Ip
         long uniqueIp = clicks.stream()
-                .map(com.example.url_shortener.entity.ClickEntity::getIpAddress)
+                .map(ClickEntity::getIpAddress)
+                .filter(Objects::nonNull)
                 .distinct()
                 .count();
 
-        //Определяем, когда был последний клик по ссылке.
-        // если кликов не было, то возвращаем null, а если были, то берём время последнего клика.
-        LocalDateTime lastClickAt = clicks.isEmpty() ? null : clicks.get(clicks.size() - 1).getTimestamp();
+        //последний клик
+        LocalDateTime lastClickAt = clicks.stream()
+                .map(ClickEntity::getClickedAt)
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
 
 
         return new AnalyticsResponse.ShortUrlStatus(
                 shortCode,
-                url.getOriginalUrl(),
+                urlEntity.getOriginalUrl(),
                 (int) totalClicks,
                 (int) uniqueIp,
-                url.getCreatedAt(),
+                urlEntity.getCreatedAt(),
                 lastClickAt
         );
+
     }
+
 
     // Возвращаю детальную аналитику по ссылке
     public AnalyticsResponse.DetailedAnalitics getDetailedAnalitics(String shortcode) {
@@ -152,12 +159,12 @@ public class AnalyticsService {
         //группируем клики по дате
         //тут и стим и лямбда выражения omg
         Map<LocalDate, Long> clicksByDate = clicks.stream()
-                .collect(Collectors.groupingBy(c -> c.getTimestamp().toLocalDate(), //функция группироваки
+                .collect(Collectors.groupingBy(c -> c.getClickedAt().toLocalDate(), //функция группироваки
                         Collectors.counting())); //функция сбора
 
         //группируем клики по часам
         Map<Integer, Long> clicksByHour = clicks.stream()
-                .collect(Collectors.groupingBy(d -> d.getTimestamp().getHour(),
+                .collect(Collectors.groupingBy(d -> d.getClickedAt().getHour(),
                         Collectors.counting()));
 
         //получаем рефереры

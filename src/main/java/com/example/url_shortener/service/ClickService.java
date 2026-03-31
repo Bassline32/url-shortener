@@ -2,7 +2,9 @@ package com.example.url_shortener.service;
 
 
 import com.example.url_shortener.entity.ClickEntity;
+import com.example.url_shortener.entity.ShortUrlEntity;
 import com.example.url_shortener.repository.ClickRepository;
+import com.example.url_shortener.repository.UrlRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,10 +16,12 @@ import java.util.List;
 public class ClickService {
 
     private final ClickRepository clickRepository;
+    private final UrlRepository urlRepository;
 
     @Autowired
-    public ClickService(ClickRepository clickRepository) {
+    public ClickService(ClickRepository clickRepository, UrlRepository urlRepository) {
         this.clickRepository = clickRepository;
+        this.urlRepository = urlRepository;
     }
 
     //сохраняем новый клик в бд
@@ -33,14 +37,22 @@ public class ClickService {
     //Возвращаем количество кликов по указанному короткому коду
     // Stream API
     public List<ClickEntity> getClickCountByShortCode(String shortCode) {
-        return clickRepository.findByShortCode(shortCode);
+        //находим сущность  ссылки
+        ShortUrlEntity urlEntity =urlRepository.findByShortCode(shortCode)
+                .orElseThrow(() -> new RuntimeException("Не найдена короткая ссылка"));
+
+        //возвращаем клики  оп сущности
+        return clickRepository.findByShortUrl(urlEntity);
+
+
+
     }
 
     //метод для отслеживания кликов и информации по ним
     public void trackClick(String shortCode, HttpServletRequest request) {
         ClickEntity click = new ClickEntity();
-        click.setShortCode(shortCode);
-        click.setTimestamp(LocalDateTime.now());
+       // click.setShortCode(shortCode);
+      //  click.setTimestamp(LocalDateTime.now());
         //возвращаем ip фдрес клинта (71)
         click.setIpAddress(request.getRemoteAddr());
         click.setUserAgent(request.getHeader("User-Agent"));

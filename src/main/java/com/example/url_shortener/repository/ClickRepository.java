@@ -1,6 +1,7 @@
 package com.example.url_shortener.repository;
 
 import com.example.url_shortener.entity.ClickEntity;
+import com.example.url_shortener.entity.ShortUrlEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,10 +14,12 @@ import java.util.List;
 @Repository
 public interface ClickRepository extends JpaRepository<ClickEntity, Long> {
 
-    List<ClickEntity> findByShortCode(String shortCode);
+    List<ClickEntity> findByShortUrl(ShortUrlEntity shortUrl);
 
     //клики по ссылке
     List<ClickEntity> findByShortUrlId(Long shortUrlId);
+
+    Void deleteByShortUrl(ShortUrlEntity entity);
 
     //количество кликов
     long countByShortUrlId(Long shortUrlId);

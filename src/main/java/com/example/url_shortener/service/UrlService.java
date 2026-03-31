@@ -59,11 +59,20 @@ public class UrlService {
                 shortUrlEntity.getExpiresAt().isBefore(LocalDateTime.now());
     }
 
+
     @Transactional
     //удаляем юрл по короткому коду
     public void deleteUrl(String shortCode) {
-        urlRepository.deleteByShortCode(shortCode);
+        ShortUrlEntity entity = shortUrlRepository.findByShortCode(shortCode)
+                .orElseThrow(() -> new UrlNotFoundException("Такая ссылка не найдена"));
+
+        //удаляем связи многиеКоМногим
+        new HashSet<>(entity.getTags())
+                .forEach(entity::removeTag);
+
+        shortUrlRepository.delete(entity);
     }
+
 
     //получаем все юрл
     public List<ShortUrl> getAllUrls() {
@@ -279,7 +288,13 @@ public class UrlService {
                 ).collect(Collectors.toSet());
 
         //обновляем теги
-        url.setTags(newTags);
+      //  url.setTags(newTags);
+
+        //удаляем старые связи
+        new HashSet<>(url.getTags()).forEach(url::removeTag);
+
+        //добавляем новые связи
+        newTags.forEach(url::addTag);
 
         return shortUrlRepository.save(url);
     }

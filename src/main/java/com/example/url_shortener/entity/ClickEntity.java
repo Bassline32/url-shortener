@@ -37,11 +37,12 @@ public class ClickEntity {
     @Column(length = 2048)
     private String referer;
 
-    @Column(name = "shortCode", nullable = false)
-    private String shortCode;
+   // @Column(name = "shortCode", nullable = false)
+   // private String shortCode;
 
-    @Column(name = "timestamp", nullable = false)
-    private LocalDateTime timestamp;
+   // @Transient
+    //@Column(name = "timestamp", nullable = false)
+   // private LocalDateTime timestamp;
 
     @Column(name = "clicked_at", nullable = false)
     private LocalDateTime clickedAt;
