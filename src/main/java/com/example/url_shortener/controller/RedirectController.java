@@ -1,6 +1,7 @@
 package com.example.url_shortener.controller;
 
 
+import com.example.url_shortener.entity.ShortUrlEntity;
 import com.example.url_shortener.service.ClickService;
 import com.example.url_shortener.service.UrlService;
 import com.example.url_shortener.model.ShortUrl;
@@ -36,21 +37,10 @@ public class RedirectController {
     @Transactional
     public ResponseEntity<Void> redirect(@PathVariable String shortCode, HttpServletRequest request) {
 
-        Optional<ShortUrl> optionalUrl = Optional.ofNullable(urlService.getUrlByShortCode(shortCode));
-        ShortUrl shortUrl = null;
+        ShortUrlEntity entity = urlService.shortUrlEntity(shortCode, request);
 
-        if (optionalUrl.isPresent()) {
-            shortUrl = optionalUrl.get();
-            if (shortUrl.getExpiresAt() != null && shortUrl.getExpiresAt().isBefore(LocalDateTime.now())) {
-                return ResponseEntity.status(HttpStatus.GONE).body(null);
-            }
-            clickService.trackClick(shortCode, request);
-            //@TODO FIX REDIRECT TO origin URL (It Actual in work)
-            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(shortUrl.getOriginalUrl())).build();
-
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(entity.getOriginalUrl()))
+                .build();
     }
-
 }
