@@ -155,10 +155,8 @@ public class UrlService {
     //определяем shortCode
     public ShortUrlEntity createShortUrl(CreateShortUrlRequest request, User user) {
 
-        //определяем ShortCode
-        String shortCode = request.customCode() != null
-                ? codeValidator.validate(request.customCode())
-                : generateUniqueCode();
+        //гененрируем короткий код  автоматически
+        String shortCode = generateUniqueCode();
 
         //находим папку если передам folderId
         Folder folder = null;
@@ -166,7 +164,6 @@ public class UrlService {
             folder = folderRepository.findById(request.folderId())
                     .orElseThrow(() -> new IllegalArgumentException("папка не найдена"));
         }
-
 
         //сорздаём сущность
         ShortUrlEntity shortUrlEntity = ShortUrlEntity.builder()

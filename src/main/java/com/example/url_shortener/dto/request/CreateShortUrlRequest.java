@@ -10,7 +10,6 @@ import java.util.List;
 @Schema(example = """
 {
   "originalUrl": "https://google.com",
-  "customCode": null,
   "expiresAt": null,
   "folderId": null,
   "tags": ["test"]
@@ -19,8 +18,6 @@ import java.util.List;
 public record CreateShortUrlRequest(
         @NotBlank
         String originalUrl,
-
-        String customCode,
         LocalDateTime expiresAt,
         Long folderId,
         List<String> tags

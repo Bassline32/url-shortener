@@ -30,6 +30,8 @@ public class UrlController {
     private final UserService userService;
     private final UserRepository userRepository;
 
+
+
     //удаляем ссылку
     @DeleteMapping("/{shortCode}")
     public ResponseEntity<Void> deleteUrl(@PathVariable String shortCode) {
@@ -53,6 +55,15 @@ public class UrlController {
         }
         return ResponseEntity.ok(url);
     }
+
+
+    //создаём короткую ссылку
+    // @PostMapping("/shorten")
+    //public ResponseEntity<?> createShortUrl(@RequestParam("originalUrl") String originalUrl) {
+    //   ShortUrl shortUrl = urlService.createShortUrl(originalUrl);
+    //   URI location = URI.create("/api/vi/urls" + shortUrl.getShortCode());
+    //   return ResponseEntity.created(location).body(shortUrl);
+    //  }
 
 
     //создаём одну короткую ссылку
