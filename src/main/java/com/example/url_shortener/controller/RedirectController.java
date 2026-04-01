@@ -6,6 +6,7 @@ import com.example.url_shortener.service.ClickService;
 import com.example.url_shortener.service.UrlService;
 import com.example.url_shortener.model.ShortUrl;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,19 +20,13 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/")
 
 public class RedirectController {
 
     private final UrlService urlService;
-    private final ClickService clickService;
-
-    @Autowired
-    public RedirectController(UrlService urlService, ClickService clickService) {
-        this.urlService = urlService;
-        this.clickService = clickService;
-    }
 
     @GetMapping("/{shortCode}")
     @Transactional
