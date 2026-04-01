@@ -106,8 +106,8 @@ public class UrlService {
 
     //получение просроченных ссылок
     public List<ShortUrl> getExpiredUrls() {
-        LocalDateTime now = LocalDateTime.now();
-        return urlRepository.findByExpiresAtBefore(now).stream()
+        LocalDateTime now = LocalDateTime.now().plusDays(1);
+        return urlRepository.findByExpiresAtBeforeAndExpiresAtIsNotNull(now).stream()
                 .map(ShortUtlMapper::mapUrlEntityToDto)
                 .toList();
     }

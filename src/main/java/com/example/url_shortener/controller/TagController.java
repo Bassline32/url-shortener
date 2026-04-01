@@ -1,5 +1,6 @@
 package com.example.url_shortener.controller;
 
+import com.example.url_shortener.dto.request.CreateTagRequest;
 import com.example.url_shortener.dto.response.PopularTagResponse;
 import com.example.url_shortener.dto.response.TagResponse;
 import com.example.url_shortener.service.TagService;
@@ -18,9 +19,9 @@ public class TagController {
     private final TagService tagService;
 
     @PostMapping
-    public ResponseEntity<TagResponse> createTag(@RequestBody Map<String, String> body) {
-        String name = body.get("name");
-        return ResponseEntity.ok(tagService.createTag(name));
+    public ResponseEntity<TagResponse> createTag(@RequestBody CreateTagRequest request) {
+        //String name = body.get("name");
+        return ResponseEntity.ok(tagService.createTag(request.name()));
     }
 
     @GetMapping("/all")

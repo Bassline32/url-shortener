@@ -26,7 +26,7 @@ public interface UrlRepository extends JpaRepository<ShortUrlEntity, String> {
     List<ShortUrlEntity> findByOriginalUrlContaining(String keyword);
 
     //получаем просроченные ссылки
-    List<ShortUrlEntity> findByExpiresAtBefore(LocalDateTime now);
+    List<ShortUrlEntity> findByExpiresAtBeforeAndExpiresAtIsNotNull(LocalDateTime now);
 
     //получаем активные ссылки
     List<ShortUrlEntity> findByExpiresAtAfterOrExpiresAtIsNull(LocalDateTime now);
