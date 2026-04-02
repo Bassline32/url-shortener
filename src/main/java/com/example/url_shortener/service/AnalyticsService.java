@@ -231,7 +231,10 @@ public class AnalyticsService {
 
         //активные ссылки
         int activeUrls = (int) allUrls.stream()
-                .filter(url -> url.getExpiresAt().isAfter(now))
+                .filter(url -> {
+                    LocalDateTime expires = url.getExpiresAt();
+                    return expires == null || expires.isAfter(now);
+                })
                 .count();
 
         //просроченные ссылки
