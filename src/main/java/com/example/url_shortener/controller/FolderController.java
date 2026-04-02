@@ -25,7 +25,9 @@ public class FolderController {
     public ResponseEntity<CreateFolderResponse> createFolder
             (@RequestBody CreateFolderRequest request) {
 
-        CreateFolderResponse response = folderService.createFolder(request.name(), request);
+        String username = "Ye";
+
+        CreateFolderResponse response = folderService.createFolder(username, request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
