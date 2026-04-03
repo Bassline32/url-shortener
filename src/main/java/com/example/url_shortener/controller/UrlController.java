@@ -143,6 +143,9 @@ public class UrlController {
         }
     }
 
+
+    //Ручка полностью заменяет теги у конкретной короткой ссылки,
+    // проверяя, что текущий пользователь является её владельцем.
     @PutMapping("/{shortCode}/tags")
     public ResponseEntity<?> updateTags(@PathVariable String shortCode,
                                         @RequestBody UpdateTagRequest request) {
@@ -166,6 +169,8 @@ public class UrlController {
         }
         return ResponseEntity.ok(urlService.getUrlsForUser(user, page, size));
     }
+
+
 
     @PutMapping("/{shortCode}/folder")
     public ResponseEntity<String> moveUrlToFolder(
