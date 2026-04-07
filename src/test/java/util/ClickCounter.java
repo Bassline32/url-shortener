@@ -30,9 +30,6 @@ public class ClickCounter {
     }
 
 
-
-
-
     public long getUnsafeCounter() {
         return unsafeCounter;
     }
