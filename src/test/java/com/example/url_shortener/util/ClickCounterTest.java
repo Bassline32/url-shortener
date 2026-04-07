@@ -1,4 +1,5 @@
-package util;
+package com.example.url_shortener.util;
+
 
 import org.junit.jupiter.api.Test;
 

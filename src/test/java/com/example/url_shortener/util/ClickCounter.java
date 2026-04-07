@@ -1,4 +1,4 @@
-package util;
+package com.example.url_shortener.util;
 
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -19,7 +19,7 @@ public class ClickCounter {
     }
 
     //с synchronized
-    public void incrementSynchronized() {
+    public synchronized void incrementSynchronized() {
         synchronizedCounter++;
 
     }
