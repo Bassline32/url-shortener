@@ -39,7 +39,6 @@ public class UrlService {
     private final ClickRepository clickRepository;
     private final ShortCodeGenerator shortCodeGenerator;
     private final TagRepository tagRepository;
-    private final ShortCodeValidator codeValidator;
     private final UrlRepository urlRepository;
     private final FolderRepository folderRepository;
     private final UserRepository userRepository;

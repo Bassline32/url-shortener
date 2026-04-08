@@ -1,0 +1,33 @@
+package com.example.url_shortener.config;
+
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
+
+@Configuration
+@EnableAsync
+public class LegacyAsyncConfig {
+
+    @Bean(name = "legacyExecutor")
+    public Executor legacyExecutor() {
+
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+
+        executor.setCorePoolSize(2); //спринг всегда будет  держать  в готовности два потока
+        executor.setMaxPoolSize(2); //ограничение максимум двумя потоками
+        executor.setQueueCapacity(100); //тут пишу сколько в очереди могу накопить  задач. 101 задача приведёт к ошибке
+        executor.setThreadNamePrefix("legacy-"); //задал имя потоку
+        executor.initialize(); //завершение настройки
+
+        return executor;
+
+
+    }
+
+
+}
