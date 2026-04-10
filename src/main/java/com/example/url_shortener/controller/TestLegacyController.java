@@ -1,6 +1,5 @@
 package com.example.url_shortener.controller;
 
-import com.example.url_shortener.service.LegacyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -8,6 +8,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
 
+//класс конфигурации/Отвечает за создание инастройку пула потоков
+
+//содержин в себе инструкцию  по созданию пула(бин)
 @Configuration
 @EnableAsync
 public class LegacyAsyncConfig {
