@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 //класс конфигурации/Отвечает за создание инастройку пула потоков
 
@@ -15,6 +16,7 @@ import java.util.concurrent.Executor;
 @EnableAsync
 public class LegacyAsyncConfig {
 
+    //к заданию 8.2
     @Bean(name = "legacyExecutor")
     public Executor legacyExecutor() {
 
@@ -27,8 +29,27 @@ public class LegacyAsyncConfig {
         executor.initialize(); //завершение настройки
 
         return executor;
+    }
 
+    //к 8.3
+    @Bean(name = "platformExecutor")
+    public Executor platformExecutor() {
 
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(2);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("platform-");
+        executor.initialize();
+
+        return executor;
+    }
+
+    //к 8.3
+    @Bean(name = "virtualExecutor")
+    public Executor virtualExecutor() {
+        return Executors.newVirtualThreadPerTaskExecutor();
     }
 
 
