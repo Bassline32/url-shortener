@@ -16,8 +16,6 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class TestLoadThreads {
 
-    private final LegacyAsyncConfig legacyAsyncConfig;
-
     @Async("platformExecutor")
     @GetMapping("/platform-load") //c фиксированным пулом потоков.
     public CompletableFuture<String> platformLoad() throws InterruptedException {
