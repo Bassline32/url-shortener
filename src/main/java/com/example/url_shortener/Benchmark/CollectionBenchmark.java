@@ -1,14 +1,14 @@
 package com.example.url_shortener.Benchmark;
 
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Queue;
+import java.util.concurrent.*;
 
 public class CollectionBenchmark {
 
-    private static final int THREADS = 10_000; //количество  потокв которые будут одновременно работать
+    private static final int THREADS = 10; //количество  потокв которые будут одновременно работать
     private static final int OPERATIONS = 1_000_000; //общее количество операций
 
     public static void main(String[] args) throws InterruptedException {
@@ -17,15 +17,34 @@ public class CollectionBenchmark {
 
         System.out.println();
         System.out.println("QUEUE BENCHMARK");
-        benchmarkQueues;
+        benchmarkQueues();
     }
 
 
     //бенчмарк для мап
     private static void benchmarkMaps() throws InterruptedException {
+        System.out.println("HashMap(не thread safe)");
+        try {
+            runMApTest(new HashMap<>(), false);
+        } catch (Exception e) {
+            System.out.println("HashMap сломалась " + e);
+        }
     }
 
-    //сам тест
+    //бечмарк для очереди
+    private static void benchmarkQueues() throws InterruptedException {
+        System.out.println("LinkedBlockingQueue:");
+        runQueueTest(new LinkedBlockingQueue<>());
+
+        System.out.println("\nConcurrentLinkedQueue");
+        runQueueTest(new ConcurrentLinkedQueue<>());
+
+        System.out.println("\\nArrayBlockingQueue (capacity=1_000_000):");
+        runQueueTest(new ArrayBlockingQueue<>(OPERATIONS));
+    }
+
+
+    //сам тест для мапы
     private static void runMApTest(Map<Integer, Integer> map, boolean threadSafe) throws InterruptedException {
 
         //создание пула потоков
@@ -73,9 +92,44 @@ public class CollectionBenchmark {
         if (threadSafe && map.size() != OPERATIONS) {
             System.out.println("Ожидали" + OPERATIONS + "а получили " + map.size());
         }
-
-
     }
 
+    //сам тест для Очереди
+    private static void runQueueTest(Queue<Integer> queue) throws InterruptedException {
+        ExecutorService executor = Executors.newFixedThreadPool(THREADS);
+        CountDownLatch latch = new CountDownLatch(THREADS);
 
+        long start = System.nanoTime();
+
+        for (int t = 0; t < THREADS; t++) {
+            final int threadId = t;
+            executor.submit(() -> {
+                try {
+                    int startVal = threadId * (OPERATIONS / THREADS);
+                    int endVal = startVal + (OPERATIONS / THREADS);
+
+                    for (int i = startVal; i < endVal; i++) {
+                        if (queue instanceof BlockingQueue<Integer> bq) {
+                            try {
+                                bq.put(i);
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                            }
+                        } else {
+                            queue.offer(i);
+                        }
+                    }
+
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+        latch.await();
+        executor.shutdown();
+
+        long elapsed = System.nanoTime() - start;
+        System.out.println("Time " + elapsed / 1_000_000 + "ms");
+        System.out.println("Queue size" + queue.size());
+    }
 }
