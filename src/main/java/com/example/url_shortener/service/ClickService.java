@@ -7,6 +7,7 @@ import com.example.url_shortener.repository.ClickRepository;
 import com.example.url_shortener.repository.UrlRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -48,6 +49,7 @@ public class ClickService {
 
     }
 
+    @Async("taskExecutor")
     //метод для отслеживания кликов и информации по ним
     public void trackClick(String shortCode, HttpServletRequest request) {
         ClickEntity click = new ClickEntity();
