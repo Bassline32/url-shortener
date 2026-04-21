@@ -39,29 +39,40 @@ public class ClickService {
     // Stream API
     public List<ClickEntity> getClickCountByShortCode(String shortCode) {
         //находим сущность  ссылки
-        ShortUrlEntity urlEntity =urlRepository.findByShortCode(shortCode)
+        ShortUrlEntity urlEntity = urlRepository.findByShortCode(shortCode)
                 .orElseThrow(() -> new RuntimeException("Не найдена короткая ссылка"));
 
         //возвращаем клики  оп сущности
         return clickRepository.findByShortUrl(urlEntity);
 
 
-
     }
 
     @Async("taskExecutor")
     //метод для отслеживания кликов и информации по ним
-    public void trackClick(String shortCode, HttpServletRequest request) {
-        ClickEntity click = new ClickEntity();
-       // click.setShortCode(shortCode);
-      //  click.setTimestamp(LocalDateTime.now());
-        //возвращаем ip фдрес клинта (71)
-        click.setIpAddress(request.getRemoteAddr());
-        click.setUserAgent(request.getHeader("User-Agent"));
-        //используется для сохранения информации о том,
-        // с какой страницы пришел пользователь, в объекте click (75)
-        //@TODO ПОДУМАТЬ ОТКУДА БРАТЬ РЕФЕР И ЗАЧЕМ
-        click.setReferer("Referer");
-        clickRepository.save(click);
+    public void trackClick(ShortUrlEntity urlEntity, HttpServletRequest request) {
+        //добавляю логирование
+        System.out.println("Async thread: " + Thread.currentThread().getName()
+                + "Virtual Thread: " + Thread.currentThread().isVirtual());
+
+        try {
+            Thread.sleep(2000);
+            ClickEntity click = new ClickEntity();
+            click.setShortUrl(urlEntity);
+            click.setIpAddress(request.getRemoteAddr());
+            click.setUserAgent(request.getHeader("User-Agent"));
+            click.setReferer(request.getHeader("Referer"));
+            click.setClickedAt(LocalDateTime.now());
+
+            clickRepository.save(click);
+
+            //обновляю счётчик кликов
+            urlEntity.incrementClickCount();
+            urlRepository.save(urlEntity);
+
+        } catch (Exception e) {
+            System.err.println("Ошибка в отслеживании клика для этого короткого кода "
+                    + urlEntity.getShortCode() + e.getMessage());
+        }
     }
 }

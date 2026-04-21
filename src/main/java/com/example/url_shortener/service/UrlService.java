@@ -22,6 +22,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.PublicKey;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -192,8 +193,19 @@ public class UrlService {
         return shortUrlRepository.save(shortUrlEntity);
     }
 
+    public ShortUrlEntity findByShortCode(String shortCode) {
+        ShortUrlEntity entity = shortUrlRepository.findByShortCode(shortCode)
+                .orElseThrow(() -> new IllegalArgumentException("Такокго короткого кода нет"));
 
-    //получение и трекинг клика
+        if (isExpired(entity)) {
+            throw new UrlExpiredException(shortCode);
+        }
+
+        return entity;
+
+    }
+
+   /* //получение и трекинг клика
     @Transactional
     public ShortUrlEntity shortUrlEntity(String shorCode, HttpServletRequest request) {
         ShortUrlEntity shortUrlEntity = shortUrlRepository.findByShortCode(shorCode)
@@ -237,7 +249,7 @@ public class UrlService {
                 : null
         );
         return shortUrlRepository.findAll(spec, pageable);
-    }
+    }*/
 
 
     public Page<ShortUrlEntity> getUrlsForUser(User user, int page, int size) {
@@ -284,7 +296,7 @@ public class UrlService {
                 ).collect(Collectors.toSet());
 
         //обновляем теги
-      //  url.setTags(newTags);
+        //  url.setTags(newTags);
 
         //удаляем старые связи
         new HashSet<>(url.getTags()).forEach(url::removeTag);

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
 @RestController
@@ -27,15 +29,22 @@ import java.util.Optional;
 public class RedirectController {
 
     private final UrlService urlService;
+    private final ClickService clickService;
 
     @GetMapping("/{shortCode}")
-    @Transactional
     public ResponseEntity<Void> redirect(@PathVariable String shortCode, HttpServletRequest request) {
 
-        ShortUrlEntity entity = urlService.shortUrlEntity(shortCode, request);
+      //находим сущность короткой ссылки
+        ShortUrlEntity entity = urlService.findByShortCode(shortCode);
 
-        return ResponseEntity.status(HttpStatus.FOUND)
+        clickService.trackClick(entity, request);
+
+        //redirect
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
                 .location(URI.create(entity.getOriginalUrl()))
                 .build();
+
+
     }
 }
